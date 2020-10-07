@@ -1,0 +1,10 @@
+
+group "me.mattstudios"
+version "1.0-SNAPSHOT"
+
+dependencies {
+
+    implementation "org.yaml:snakeyaml:1.25"
+
+}
+

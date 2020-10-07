@@ -1,2 +1,8 @@
 rootProject.name = 'triumph-config'
 
+["config"].each {
+    include "$it"
+    findProject(":$it")?.name = "triumph-$it"
+}
+
+include "config-test"
