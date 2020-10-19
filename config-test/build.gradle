@@ -6,11 +6,16 @@ plugins {
 group "me.mattstudios"
 version "1.0-SNAPSHOT"
 
+repositories {
+    maven { url = "https://jitpack.io/" }
+}
+
 dependencies {
 
     implementation project(":triumph-config")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "com.github.Querz:NBT:5.5"
 
 }
 
