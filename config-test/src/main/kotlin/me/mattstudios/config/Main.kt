@@ -3,12 +3,13 @@ package me.mattstudios.config
 import me.mattstudios.config.annotations.Comment
 import me.mattstudios.config.annotations.Description
 import me.mattstudios.config.annotations.Path
-import me.mattstudios.config.properties.Property
+import me.mattstudios.config.properties.StringProperty
 import java.io.File
 
 /**
  * @author Matt
  */
+
 fun main() {
 
     val config = Config.from(File("testing-files", "config.yml")).setHolder(Settings::class.java).build()
@@ -22,22 +23,25 @@ fun main() {
 
 }
 
-@Description("Description comment!")
+@Description("Description comment will go at the top of file!")
 object Settings : ConfigHolder {
 
     @Path("first")
     @Comment("Comment for first property")
-    val FIRST = TestProperty<String>("hello")
+    val FIRST = StringProperty("first property")
 
     @Path("second")
-    val SECOND = TestProperty<String>("hello")
+    val SECOND = StringProperty("second property")
 
-    @Path("third")
-    val THIRD = TestProperty<String>("hello")
+    @Path("nested.first")
+    val THIRD = StringProperty("third property")
+
+    @Path("nested.second.first")
+    val FORTH = StringProperty("forth property")
+
+    @Path("nested.second.second")
+    val FIFTH = StringProperty("fifth property")
 
 }
 
-class TestProperty<T>(val value: String) : Property<T> {
 
-
-}

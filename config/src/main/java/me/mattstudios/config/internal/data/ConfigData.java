@@ -14,4 +14,8 @@ public final class ConfigData {
     @NotNull
     private final Map<Property<?>, List<String>> comments = new LinkedHashMap<>();
 
+    public Map<Property<?>, Object> getProperties() {
+        return properties;
+    }
+
 }

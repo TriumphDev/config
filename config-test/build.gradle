@@ -8,6 +8,7 @@ version "1.0-SNAPSHOT"
 
 repositories {
     maven { url = "https://jitpack.io/" }
+    maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 }
 
 dependencies {
@@ -16,6 +17,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "com.github.Querz:NBT:5.5"
+    implementation "org.spigotmc:spigot-api:1.16.3-R0.1-SNAPSHOT"
 
 }
 
