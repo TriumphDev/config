@@ -33,12 +33,14 @@ object Settings : ConfigHolder {
     @Path("second")
     val SECOND = StringProperty("second property")
 
+    @Comment("Commenting")
     @Path("nested.first")
     val THIRD = StringProperty("third property")
 
     @Path("nested.second.first")
     val FORTH = StringProperty("forth property")
 
+    @Comment("Commenting")
     @Path("nested.second.second")
     val FIFTH = StringProperty("fifth property")
 

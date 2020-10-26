@@ -2,6 +2,7 @@ package me.mattstudios.config.internal;
 
 import me.mattstudios.config.Config;
 import me.mattstudios.config.ConfigHolder;
+import me.mattstudios.config.annotations.Comment;
 import me.mattstudios.config.annotations.Path;
 import me.mattstudios.config.internal.data.ConfigData;
 import me.mattstudios.config.internal.yaml.YamlManager;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 public final class ConfigManager implements Config {
 
@@ -66,7 +68,13 @@ public final class ConfigManager implements Config {
                 final Property<?> property = (Property<?>) field.get(null);
 
                 if (property instanceof BaseProperty) {
-                    ((BaseProperty<?>) property).setPath(path);
+                    final BaseProperty<?> baseProperty = (BaseProperty<?>) property;
+                    baseProperty.setPath(path);
+
+                    if (field.isAnnotationPresent(Comment.class)) {
+                        baseProperty.setComments(Arrays.asList(field.getAnnotation(Comment.class).value()));
+                    }
+
                 }
 
                 add(property);

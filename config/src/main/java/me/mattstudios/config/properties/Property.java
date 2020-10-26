@@ -2,6 +2,9 @@ package me.mattstudios.config.properties;
 
 import me.mattstudios.config.internal.yaml.YamlManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface Property<T> {
 
@@ -13,5 +16,8 @@ public interface Property<T> {
 
     @NotNull
     T determineValue(@NotNull final YamlManager yamlManager);
+
+    @Nullable
+    List<String> getComments();
 
 }

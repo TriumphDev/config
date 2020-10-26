@@ -2,6 +2,9 @@ package me.mattstudios.config.properties;
 
 import me.mattstudios.config.internal.yaml.YamlManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public final class StringProperty extends BaseProperty<String> {
 

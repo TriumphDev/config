@@ -51,10 +51,14 @@ public final class YamlReader {
 
     @Nullable
     public <T> T get(@NotNull final String path, @NotNull Class<T> clazz) {
+        System.out.println(path);
         Object value = data;
 
         for (final String step : path.split("\\.")) {
-            if (!(value instanceof Map)) break;
+            if (!(value instanceof Map)) {
+                value = null;
+                continue;
+            }
 
             value = ((Map<?, ?>) value).get(step);
             if (value == null) return null;

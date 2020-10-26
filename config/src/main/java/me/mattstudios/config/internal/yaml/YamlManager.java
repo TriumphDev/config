@@ -13,8 +13,8 @@ public final class YamlManager {
 
     @NotNull
     private final File file;
-    @Nullable
-    private Yaml yaml;
+    @NotNull
+    private final Yaml yaml;
 
     @NotNull
     private final YamlReader yamlReader;
@@ -54,7 +54,7 @@ public final class YamlManager {
     }
 
     public void writeProperties() {
-        new PropertyScanner(configData);
+        new PropertyScanner(configData, yaml);
     }
 
 }
