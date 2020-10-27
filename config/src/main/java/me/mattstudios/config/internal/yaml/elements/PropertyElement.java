@@ -1,22 +1,27 @@
 package me.mattstudios.config.internal.yaml.elements;
 
-import java.util.Collections;
+import me.mattstudios.config.properties.Property;
+import org.jetbrains.annotations.NotNull;
 
-public final class PropertyElement implements Element {
+public final class PropertyElement extends BaseElement {
 
-    private final int indentationSize;
+    @NotNull
     private final String key;
-    private final Object value;
+    @NotNull
+    private final Property<?> property;
+    @NotNull
+    final Object value;
 
-    public PropertyElement(final int indentationSize, final String key, final Object value) {
-        this.indentationSize = indentationSize;
+    public PropertyElement(final int indentationLevel, @NotNull final String key, @NotNull final Property<?> property, @NotNull final Object value) {
+        super(indentationLevel);
         this.key = key;
+        this.property = property;
         this.value = value;
     }
 
     @Override
     public String getValue() {
-        return String.join("", Collections.nCopies(indentationSize, " ")) + key + ": " + value;
+        return property.getExportValue(key, value);
     }
 
 }

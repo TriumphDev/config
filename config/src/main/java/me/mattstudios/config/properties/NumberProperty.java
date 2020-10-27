@@ -3,17 +3,17 @@ package me.mattstudios.config.properties;
 import me.mattstudios.config.internal.yaml.YamlManager;
 import org.jetbrains.annotations.NotNull;
 
-public final class StringProperty extends BaseProperty<String> {
+public final class NumberProperty extends BaseProperty<Number> {
 
-    public StringProperty(@NotNull final String defaultValue) {
+    public NumberProperty(@NotNull final Number defaultValue) {
         super(defaultValue);
 
     }
 
     @NotNull
     @Override
-    public String determineValue(@NotNull final YamlManager yamlManager) {
-        final String value = yamlManager.getValue(getPath(), String.class);
+    public Number determineValue(@NotNull final YamlManager yamlManager) {
+        final Number value = yamlManager.getValue(getPath(), Number.class);
         if (value == null) return getDefaultValue();
         return value;
     }
@@ -21,7 +21,7 @@ public final class StringProperty extends BaseProperty<String> {
     @NotNull
     @Override
     public String getExportValue(@NotNull final String key, @NotNull final Object value) {
-        return key + ": \"" + value + '"';
+        return key + ": " + value;
     }
 
 }

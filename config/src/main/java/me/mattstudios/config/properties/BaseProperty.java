@@ -1,6 +1,5 @@
 package me.mattstudios.config.properties;
 
-import me.mattstudios.config.internal.yaml.YamlManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,10 +36,6 @@ public abstract class BaseProperty<T> implements Property<T> {
         return defaultValue;
     }
 
-    @NotNull
-    @Override
-    public abstract T determineValue(@NotNull final YamlManager yamlManager);
-
     public void setComments(@Nullable final List<String> comments) {
         this.comments = comments;
     }
@@ -57,4 +52,5 @@ public abstract class BaseProperty<T> implements Property<T> {
                 "path='" + path + '\'' +
                 '}';
     }
+
 }

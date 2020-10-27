@@ -33,7 +33,6 @@ public final class YamlReader {
         this.charset = charset;
 
         data = loadData();
-        System.out.println("Properties from file - " + data);
     }
 
     private Map<String, Object> loadData() {
@@ -51,7 +50,6 @@ public final class YamlReader {
 
     @Nullable
     public <T> T get(@NotNull final String path, @NotNull Class<T> clazz) {
-        System.out.println(path);
         Object value = data;
 
         for (final String step : path.split("\\.")) {

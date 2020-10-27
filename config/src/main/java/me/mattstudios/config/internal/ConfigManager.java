@@ -3,6 +3,7 @@ package me.mattstudios.config.internal;
 import me.mattstudios.config.Config;
 import me.mattstudios.config.ConfigHolder;
 import me.mattstudios.config.annotations.Comment;
+import me.mattstudios.config.annotations.Description;
 import me.mattstudios.config.annotations.Path;
 import me.mattstudios.config.internal.data.ConfigData;
 import me.mattstudios.config.internal.yaml.YamlManager;
@@ -35,7 +36,7 @@ public final class ConfigManager implements Config {
     @NotNull
     @Override
     public <T> T getProperty(@NotNull final Property<T> property) {
-        return null;
+        return configData.get(property);
     }
 
     @Override
@@ -53,6 +54,10 @@ public final class ConfigManager implements Config {
 
     private void setupConfig() {
         try {
+            if (holder.isAnnotationPresent(Description.class)) {
+                configData.addPathComment("FILE_COMMENT", Arrays.asList(holder.getAnnotation(Description.class).value()));
+            }
+
             for (final Field field : holder.getDeclaredFields()) {
                 if (!Property.class.isAssignableFrom(field.getType()) || !Modifier.isStatic(field.getModifiers())) {
                     continue;
@@ -83,15 +88,13 @@ public final class ConfigManager implements Config {
             e.printStackTrace();
         }
 
-        System.out.println("Properties - " + configData.getProperties());
-
         yamlManager.writeProperties();
 
     }
 
     public void add(Property<?> property) {
         final Object value = property.determineValue(yamlManager);
-        configData.getProperties().put(property, value);
+        configData.addProperty(property, value);
     }
 
 }

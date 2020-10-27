@@ -3,7 +3,7 @@ package me.mattstudios.config
 import me.mattstudios.config.annotations.Comment
 import me.mattstudios.config.annotations.Description
 import me.mattstudios.config.annotations.Path
-import me.mattstudios.config.properties.StringProperty
+import me.mattstudios.config.properties.Property
 import java.io.File
 
 /**
@@ -13,7 +13,7 @@ import java.io.File
 fun main() {
 
     val config = Config.from(File("testing-files", "config.yml")).setHolder(Settings::class.java).build()
-
+    println(config.getProperty(Settings.FIRST))
     /*val settingsManager = ConfigManager()SettingsManagerBuilder.withYamlFile(File("testing-files", "config.yml"))
             .useDefaultMigrationService()
             .configurationData(createConfiguration(Settings::class.java))
@@ -28,21 +28,21 @@ object Settings : ConfigHolder {
 
     @Path("first")
     @Comment("Comment for first property")
-    val FIRST = StringProperty("first property")
+    val FIRST = Property.create("first property")
 
     @Path("second")
-    val SECOND = StringProperty("second property")
+    val SECOND = Property.create("second property")
 
-    @Comment("Commenting")
+    @Comment("Commenting third property")
     @Path("nested.first")
-    val THIRD = StringProperty("third property")
+    val THIRD = Property.create("third property")
 
     @Path("nested.second.first")
-    val FORTH = StringProperty("forth property")
+    val FORTH = Property.create(5.5)
 
-    @Comment("Commenting")
+    @Comment("Commenting last property")
     @Path("nested.second.second")
-    val FIFTH = StringProperty("fifth property")
+    val FIFTH = Property.create("fifth property")
 
 }
 

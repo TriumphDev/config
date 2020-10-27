@@ -7,7 +7,6 @@ import me.mattstudios.config.internal.yaml.elements.KeyElement;
 import me.mattstudios.config.internal.yaml.elements.PropertyElement;
 import me.mattstudios.config.properties.Property;
 import org.jetbrains.annotations.NotNull;
-import org.yaml.snakeyaml.Yaml;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,39 +17,30 @@ public final class PropertyScanner {
 
     @NotNull
     private final List<Element> elements = new ArrayList<>();
-    private final Yaml yaml;
 
-    public PropertyScanner(@NotNull final ConfigData configData, @NotNull final Yaml yaml) {
-        this.yaml = yaml;
-
-        final Map<String, Object> mappedProperties = mapProperties(configData);
-
-        checkElements(mappedProperties, 0);
-
-        for (final Element element : elements) {
-            System.out.println(element.getValue());
-        }
-
+    public PropertyScanner(@NotNull final ConfigData configData) {
+        createElements(mapProperties(configData), 0, configData);
     }
 
-    private void checkElements(@NotNull final Map<String, Object> mappedProperties, final int indentation) {
+    private void createElements(@NotNull final Map<String, Object> mappedProperties, final int indentation, @NotNull final ConfigData configData) {
         for (final Map.Entry<String, Object> entry : mappedProperties.entrySet()) {
             final Object value = entry.getValue();
 
             if (!(value instanceof Map)) {
                 final Property<?> property = (Property<?>) entry.getValue();
 
-                if (property.getComments() != null) {
-                    elements.add(new CommentElement(indentation));
+                final List<String> comments = property.getComments();
+                if (comments != null) {
+                    elements.add(new CommentElement(indentation, comments));
                 }
 
-                elements.add(new PropertyElement(indentation, entry.getKey(), entry.getValue()));
+                elements.add(new PropertyElement(indentation, entry.getKey(), property, configData.get(property)));
                 continue;
             }
 
             elements.add(new KeyElement(indentation, entry.getKey()));
 
-            checkElements((Map<String, Object>) value, indentation + 2);
+            createElements((Map<String, Object>) value, indentation + 1, configData);
 
         }
     }
@@ -86,6 +76,11 @@ public final class PropertyScanner {
         }
 
         return mappedProperties;
+    }
+
+    @NotNull
+    public List<Element> getElements() {
+        return elements;
     }
 
 }

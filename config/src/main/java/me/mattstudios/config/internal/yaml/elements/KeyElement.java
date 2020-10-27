@@ -1,20 +1,17 @@
 package me.mattstudios.config.internal.yaml.elements;
 
-import java.util.Collections;
+public final class KeyElement extends BaseElement {
 
-public final class KeyElement implements Element {
+    private final String key;
 
-    private final int indentationSize;
-    private final String text;
-
-    public KeyElement(final int indentationSize, final String text) {
-        this.indentationSize = indentationSize;
-        this.text = text;
+    public KeyElement(final int indentationLevel, final String key) {
+        super(indentationLevel);
+        this.key = key;
     }
 
     @Override
     public String getValue() {
-        return String.join("", Collections.nCopies(indentationSize, " ")) + text + ":";
+        return key + ":";
     }
 
 }

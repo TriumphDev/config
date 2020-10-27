@@ -1,18 +1,27 @@
 package me.mattstudios.config.internal.yaml.elements;
 
-import java.util.Collections;
+import org.jetbrains.annotations.NotNull;
 
-public final class CommentElement implements Element {
+import java.util.List;
 
-    private final int indentationSize;
+public final class CommentElement extends BaseElement {
 
-    public CommentElement(final int indentationSize) {
-        this.indentationSize = indentationSize;
+    @NotNull
+    private final List<String> comments;
+
+    public CommentElement(final int indentationLevel, @NotNull final List<String> comments) {
+        super(indentationLevel);
+        this.comments = comments;
     }
 
     @Override
     public String getValue() {
-        return String.join("", Collections.nCopies(indentationSize, " ")) + "# Comment";
+         return "";
+    }
+
+    @NotNull
+    public List<String> getComments() {
+        return comments;
     }
 
 }
