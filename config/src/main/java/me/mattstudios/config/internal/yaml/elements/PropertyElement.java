@@ -20,8 +20,8 @@ public final class PropertyElement extends BaseElement {
     }
 
     @Override
-    public String getValue() {
-        return property.getExportValue(key, value);
+    public @NotNull String getValue(@NotNull final String indentation) {
+        return property.getExportValue(key, value, indentation);
     }
 
 }

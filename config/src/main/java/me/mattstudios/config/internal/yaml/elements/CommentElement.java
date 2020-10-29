@@ -15,7 +15,7 @@ public final class CommentElement extends BaseElement {
     }
 
     @Override
-    public String getValue() {
+    public @NotNull String getValue(@NotNull final String indentation) {
          return "";
     }
 

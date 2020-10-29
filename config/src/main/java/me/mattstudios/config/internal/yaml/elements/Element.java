@@ -7,6 +7,6 @@ public interface Element {
     int getIndentationLevel();
 
     @NotNull
-    String getValue();
+    String getValue(@NotNull final String indentation);
 
 }

@@ -1,5 +1,7 @@
 package me.mattstudios.config.internal.yaml.elements;
 
+import org.jetbrains.annotations.NotNull;
+
 public final class KeyElement extends BaseElement {
 
     private final String key;
@@ -9,9 +11,10 @@ public final class KeyElement extends BaseElement {
         this.key = key;
     }
 
+    @NotNull
     @Override
-    public String getValue() {
-        return key + ":";
+    public String getValue(@NotNull final String indentation) {
+        return indentation + key + ":";
     }
 
 }

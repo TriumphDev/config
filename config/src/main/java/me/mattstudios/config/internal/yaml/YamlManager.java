@@ -95,8 +95,7 @@ public final class YamlManager {
                     continue;
                 }
 
-                writer.append(getCurrentIndentation(element.getIndentationLevel()))
-                        .append(element.getValue())
+                writer.append(element.getValue(getCurrentIndentation(element.getIndentationLevel())))
                         .append("\n");
 
             }

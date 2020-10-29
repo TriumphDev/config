@@ -5,6 +5,7 @@ import me.mattstudios.config.internal.yaml.elements.CommentElement;
 import me.mattstudios.config.internal.yaml.elements.Element;
 import me.mattstudios.config.internal.yaml.elements.KeyElement;
 import me.mattstudios.config.internal.yaml.elements.PropertyElement;
+import me.mattstudios.config.properties.OptionalProperty;
 import me.mattstudios.config.properties.Property;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public final class PropertyScanner {
 
@@ -28,6 +30,13 @@ public final class PropertyScanner {
 
             if (!(value instanceof Map)) {
                 final Property<?> property = (Property<?>) entry.getValue();
+
+                final Object propertyValue = configData.get(property);
+
+                if (property instanceof OptionalProperty) {
+                    final Optional<?> optional = (Optional<?>) propertyValue;
+                    if (!optional.isPresent()) continue;
+                }
 
                 final List<String> comments = property.getComments();
                 if (comments != null) {

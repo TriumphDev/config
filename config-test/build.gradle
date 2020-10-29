@@ -18,6 +18,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "com.github.Querz:NBT:5.5"
     implementation "org.spigotmc:spigot-api:1.16.3-R0.1-SNAPSHOT"
+    implementation "com.google.code.gson:gson:2.8.6"
 
 }
 
