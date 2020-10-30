@@ -51,7 +51,8 @@ public final class YamlManager {
     }
 
     @Nullable
-    public <T> T getValue(@NotNull String path, @NotNull final Class<T> clazz) {
+    public <T> T getValue(@NotNull String path, @Nullable final Class<T> clazz) {
+        if (clazz == null) return null;
         return yamlReader.get(path, clazz);
     }
 

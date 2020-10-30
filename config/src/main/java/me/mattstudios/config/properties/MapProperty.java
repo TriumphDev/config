@@ -1,6 +1,5 @@
 package me.mattstudios.config.properties;
 
-import me.mattstudios.config.internal.yaml.YamlManager;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -10,20 +9,8 @@ import java.util.Iterator;
 
 public final class MapProperty<T> extends BaseProperty<T> {
 
-    @NotNull
-    private final Class<T> type;
-
     public MapProperty(@NotNull final T defaultValue, @NotNull final Class<T> type) {
-        super(defaultValue);
-        this.type = type;
-    }
-
-    @NotNull
-    @Override
-    public T determineValue(@NotNull final YamlManager yamlManager) {
-        final T value = yamlManager.getValue(getPath(), type);
-        if (value == null) return getDefaultValue();
-        return value;
+        super(defaultValue, type);
     }
 
     @NotNull
