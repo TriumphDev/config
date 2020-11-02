@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,8 +66,7 @@ public interface Property<T> {
     @Contract("_ -> new")
     static <T extends Enum<T>> Property<T> create(@NotNull final T defaultValue) {
         //noinspection unchecked
-        final Class<T> type = (Class<T>) defaultValue.getClass();
-        return new EnumProperty<>(defaultValue, type);
+        return new EnumProperty<>(defaultValue, (Class<T>) defaultValue.getClass());
     }
 
     @NotNull
@@ -80,16 +78,16 @@ public interface Property<T> {
 
     @NotNull
     @Contract("_ -> new")
-    static <T> Property<List<T>> create(@NotNull final T... defaultValues) {
+    static <T> Property<Map<String, T>> create(@NotNull final Map<String, T> defaultValue) {
         //noinspection unchecked
-        return new ListProperty<>(Arrays.asList(defaultValues), (Class<List<T>>) (Object) List.class);
+        return new MapProperty<>(defaultValue, (Class<Map<String, T>>) (Object) Map.class);
     }
 
     @NotNull
     @Contract("_ -> new")
-    static <T> Property<Map<String, T>> create(@NotNull final Map<String, T> defaultValue) {
+    static <T> Property<T> create(@NotNull final T defaultValue) {
         //noinspection unchecked
-        return new MapProperty<>(defaultValue, (Class<Map<String, T>>) (Object) Map.class);
+        return new BeanProperty<>(defaultValue, (Class<T>) defaultValue.getClass());
     }
 
     @NotNull

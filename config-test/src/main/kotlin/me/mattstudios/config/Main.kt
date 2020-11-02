@@ -3,17 +3,25 @@ package me.mattstudios.config
 import com.google.gson.Gson
 import me.mattstudios.config.annotations.Comment
 import me.mattstudios.config.annotations.Description
+import me.mattstudios.config.annotations.Name
 import me.mattstudios.config.annotations.Path
+import me.mattstudios.config.internal.bean.PropertyMapper
 import me.mattstudios.config.properties.Property
-import java.io.File
+import java.beans.IntrospectionException
+import java.beans.Introspector
+import java.beans.PropertyDescriptor
+import java.util.ArrayList
+import java.util.Collections
 
 /**
  * @author Matt
  */
 
 data class Test(
+        @Comment("Comment test")
         var name: String = "Matt",
-        var version: String = "1.0-SNAPSHOT",
+        @Name("version-number")
+        var versionNumber: String = "1.0-SNAPSHOT",
         var number: Int = 5,
         var child: Child = Child()
 )
@@ -27,7 +35,7 @@ val gson = Gson()
 
 fun main() {
 
-    val config = Config.from(File("testing-files", "config.yml")).setHolder(Settings::class.java).build()
+    /*config = Config.from(File("testing-files", "config.yml")).setHolder(Settings::class.java).build()
 
     println(config.getProperty(Settings.FIRST))
     println(config.getProperty(Settings.SECOND))
@@ -37,14 +45,13 @@ fun main() {
     val test = config.getProperty(Settings.SIXTH)
     println(test)
     println(config.getProperty(Settings.SEVENTH))
-    println(config.getProperty(Settings.EIGHT))
+    println(config.getProperty(Settings.EIGHT)*/
 
-    val testJson = gson.toJson(Test())
-    println(testJson)
+    println(gson.toJson(Test()))
 
-    val json = "{\"name\":\"Matt\",\"version\":\"1.0-SNAPSHOT\",\"number\":5,\"child\":{\"name\":\"Child\",\"number\":10}}"
-    val testDeserialized = gson.fromJson(json, Test::class.java)
-    println(testDeserialized)
+    val test = Test()
+
+    PropertyMapper(test)
 
     /*val settingsManager = ConfigManager()SettingsManagerBuilder.withYamlFile(File("testing-files", "config.yml"))
             .useDefaultMigrationService()
@@ -86,6 +93,9 @@ object Settings : ConfigHolder {
     @Comment("Some comments")
     @Path("nested.map")
     val EIGHT = Property.create(mapOf("test" to 5, "more" to 10))
+
+    //@Path("nested.bean")
+    //val NINE = Property.create(Test())
 
 }
 
