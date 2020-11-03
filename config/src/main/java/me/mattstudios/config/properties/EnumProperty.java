@@ -28,10 +28,4 @@ public final class EnumProperty<T extends Enum<T>> extends BaseProperty<T> {
         return (T) value;
     }
 
-    @NotNull
-    @Override
-    public String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final String indentation) {
-        return indentation + key + ": \"" + value + '"';
-    }
-
 }

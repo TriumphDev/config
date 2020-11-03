@@ -1,17 +1,11 @@
 package me.mattstudios.config
 
-import com.google.gson.Gson
 import me.mattstudios.config.annotations.Comment
 import me.mattstudios.config.annotations.Description
 import me.mattstudios.config.annotations.Name
 import me.mattstudios.config.annotations.Path
-import me.mattstudios.config.internal.bean.PropertyMapper
 import me.mattstudios.config.properties.Property
-import java.beans.IntrospectionException
-import java.beans.Introspector
-import java.beans.PropertyDescriptor
-import java.util.ArrayList
-import java.util.Collections
+import java.io.File
 
 /**
  * @author Matt
@@ -31,27 +25,26 @@ data class Child(
         var number: Int = 10
 )
 
-val gson = Gson()
-
 fun main() {
 
-    /*config = Config.from(File("testing-files", "config.yml")).setHolder(Settings::class.java).build()
+    val config = Config.from(File("testing-files", "config.yml")).setHolder(Settings::class.java).build()
 
     println(config.getProperty(Settings.FIRST))
     println(config.getProperty(Settings.SECOND))
     println(config.getProperty(Settings.THIRD))
     println(config.getProperty(Settings.FORTH))
     println(config.getProperty(Settings.FIFTH))
-    val test = config.getProperty(Settings.SIXTH)
+    val test = config.getProperty(Settings.SIXTH2)
     println(test)
     println(config.getProperty(Settings.SEVENTH))
-    println(config.getProperty(Settings.EIGHT)*/
+    println(config.getProperty(Settings.EIGHT))
 
-    println(gson.toJson(Test()))
+    //println(gson.toJson(Test()))
 
-    val test = Test()
+    //val test = Test()
 
-    PropertyMapper(test)
+    //PropertyMapper(test)
+
 
     /*val settingsManager = ConfigManager()SettingsManagerBuilder.withYamlFile(File("testing-files", "config.yml"))
             .useDefaultMigrationService()
@@ -84,7 +77,10 @@ object Settings : ConfigHolder {
     val FIFTH = Property.createOptional("Hello")
 
     @Path("nested.list")
-    val SIXTH = Property.create(listOf(1, 2, 3))
+    val SIXTH = Property.create(listOf(1, 2))
+
+    @Path("nested.list2")
+    val SIXTH2 = Property.create(listOf("Hello", "Mate"))
 
     @Comment("Added an empty line above")
     @Path("nested.enum")

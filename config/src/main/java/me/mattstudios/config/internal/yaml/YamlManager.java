@@ -24,7 +24,7 @@ public final class YamlManager {
     private final Yaml yaml;
 
     @NotNull
-    private final String indentation = "  ";
+    private static final String indentation = "  ";
 
     @NotNull
     private final YamlReader yamlReader;

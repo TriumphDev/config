@@ -9,21 +9,25 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public final class PropertyMapper {
 
-    private final Object bean;
+    private final Object value;
+    private final Class<?> clazz;
 
-    public PropertyMapper(@NotNull final Object bean) {
-        this.bean = bean;
+    public PropertyMapper(@NotNull final Object value) {
+        this.value = value;
+        this.clazz = value.getClass();
 
-        System.out.println(getWritableProperties(bean.getClass()));
+        final List<PropertyDescriptor> properties = getProperties();
+        for (final PropertyDescriptor property : properties) {
+            System.out.println(property.getName() + " - " + property.getPropertyType());
+        }
+
     }
 
-    protected List<PropertyDescriptor> getWritableProperties(Class<?> clazz) {
+    protected List<PropertyDescriptor> getProperties() {
         final PropertyDescriptor[] descriptors;
         try {
             descriptors = Introspector.getBeanInfo(clazz).getPropertyDescriptors();
@@ -31,22 +35,17 @@ public final class PropertyMapper {
             throw new IllegalStateException(e);
         }
 
-        final List<PropertyDescriptor> writableProperties = new ArrayList<>(descriptors.length);
+        final List<PropertyDescriptor> properties = new ArrayList<>(descriptors.length);
         for (final PropertyDescriptor descriptor : descriptors) {
-            if (descriptor.getWriteMethod() != null && descriptor.getReadMethod() != null) {
-                writableProperties.add(descriptor);
-            }
+            if (descriptor.getWriteMethod() == null || descriptor.getReadMethod() == null) continue;
+            properties.add(descriptor);
         }
 
-        return sortPropertiesList(clazz, writableProperties);
-    }
-
-    protected List<PropertyDescriptor> sortPropertiesList(Class<?> clazz, List<PropertyDescriptor> properties) {
-        Map<String, Integer> fieldNameByIndex = createFieldNameOrderMap(clazz);
-        int maxIndex = fieldNameByIndex.size();
+        final List<Class<?>> classes = collectClassAndAllParents(clazz);
+        final int maxIndex = getFieldsCount(classes);
 
         properties.sort(Comparator.comparing(property -> {
-            Integer index = fieldNameByIndex.get(property.getName());
+            Integer index = getFieldIndex(property.getName(), classes);
             return index == null ? maxIndex : index;
         }));
 
@@ -54,22 +53,27 @@ public final class PropertyMapper {
     }
 
 
-    protected Map<String, Integer> createFieldNameOrderMap(Class<?> clazz) {
-        Map<String, Integer> nameByIndex = new HashMap<>();
-        int i = 0;
-        for (final Class<?> currentClass : collectClassAndAllParents(clazz)) {
-            for (Field field : currentClass.getDeclaredFields()) {
-                nameByIndex.put(field.getName(), i);
-                ++i;
+    private int getFieldsCount(@NotNull final List<Class<?>> classes) {
+        int fields = 0;
+        for (final Class<?> currentClass : classes) {
+            fields += currentClass.getDeclaredFields().length;
+        }
+        return fields;
+    }
+
+    private Integer getFieldIndex(@NotNull final String fieldName, @NotNull final List<Class<?>> classes) {
+        for (final Class<?> currentClass : classes) {
+            final Field[] fields = currentClass.getDeclaredFields();
+            for (int i = 0; i < fields.length; i++) {
+                if (fields[i].getName().equals(fieldName)) return i;
             }
         }
 
-        return nameByIndex;
+        return null;
     }
 
-
     protected List<Class<?>> collectClassAndAllParents(Class<?> clazz) {
-        List<Class<?>> parents = new ArrayList<>();
+        final List<Class<?>> parents = new ArrayList<>();
 
         Class<?> curClass = clazz;
         while (curClass != null && curClass != Object.class) {

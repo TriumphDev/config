@@ -73,7 +73,7 @@ public interface Property<T> {
     @Contract("_ -> new")
     static <T> Property<List<T>> create(@NotNull final List<T> defaultValue) {
         //noinspection unchecked
-        return new ListProperty<>(defaultValue, (Class<List<T>>) (Object) List.class);
+        return new SimpleProperty<>(defaultValue, (Class<List<T>>) (Object) List.class);
     }
 
     @NotNull

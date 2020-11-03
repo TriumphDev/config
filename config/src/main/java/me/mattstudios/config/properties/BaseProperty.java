@@ -1,5 +1,6 @@
 package me.mattstudios.config.properties;
 
+import me.mattstudios.config.internal.bean.PropertyExporter;
 import me.mattstudios.config.internal.yaml.YamlManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,6 +49,13 @@ public abstract class BaseProperty<T> implements Property<T> {
         final T value = yamlManager.getValue(getPath(), type);
         if (value == null) return getDefaultValue();
         return value;
+    }
+
+    @Override
+    public @NotNull String getExportValue(final @NotNull String key, final @NotNull Object value, final @NotNull String indentation) {
+        final Class<T> type = getType();
+        if (type == null) return "";
+        return indentation + key + ": " + PropertyExporter.exportValue(value, type, indentation);
     }
 
     public void setComments(@Nullable final List<String> comments) {
