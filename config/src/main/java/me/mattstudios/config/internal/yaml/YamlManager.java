@@ -1,7 +1,6 @@
 package me.mattstudios.config.internal.yaml;
 
 import me.mattstudios.config.internal.data.ConfigData;
-import me.mattstudios.config.internal.yaml.elements.CommentElement;
 import me.mattstudios.config.internal.yaml.elements.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,8 +72,7 @@ public final class YamlManager {
             if (description != null) {
                 for (final String comment : description) {
                     if (!comment.isEmpty() && !"\n".equals(comment)) {
-                        writer.append(getCurrentIndentation(0))
-                                .append("# ");
+                        writer.append("# ");
                     }
 
                     writer.append(comment).append("\n");
@@ -82,21 +80,7 @@ public final class YamlManager {
             }
 
             for (final Element element : scanner.getElements()) {
-                if (element instanceof CommentElement) {
-                    final List<String> comments = ((CommentElement) element).getComments();
-                    for (final String comment : comments) {
-                        if (!comment.isEmpty() && !"\n".equals(comment)) {
-                            writer.append(getCurrentIndentation(element.getIndentationLevel()))
-                                    .append("# ");
-                        }
-
-                        writer.append(comment).append("\n");
-                    }
-
-                    continue;
-                }
-
-                writer.append(element.getValue(getCurrentIndentation(element.getIndentationLevel())))
+                writer.append(element.getValue(indentation))
                         .append("\n");
 
             }
@@ -105,14 +89,6 @@ public final class YamlManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private String getCurrentIndentation(final int indentationLevel) {
-        final StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < indentationLevel; i++) {
-            builder.append(indentation);
-        }
-        return builder.toString();
     }
 
 }

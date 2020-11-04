@@ -13,24 +13,10 @@ import java.util.List;
 
 public final class PropertyMapper {
 
-    private final Object value;
-    private final Class<?> clazz;
-
-    public PropertyMapper(@NotNull final Object value) {
-        this.value = value;
-        this.clazz = value.getClass();
-
-        final List<PropertyDescriptor> properties = getProperties();
-        for (final PropertyDescriptor property : properties) {
-            System.out.println(property.getName() + " - " + property.getPropertyType());
-        }
-
-    }
-
-    protected List<PropertyDescriptor> getProperties() {
+    protected List<PropertyDescriptor> getProperties(@NotNull final Class<?> type) {
         final PropertyDescriptor[] descriptors;
         try {
-            descriptors = Introspector.getBeanInfo(clazz).getPropertyDescriptors();
+            descriptors = Introspector.getBeanInfo(type).getPropertyDescriptors();
         } catch (IntrospectionException e) {
             throw new IllegalStateException(e);
         }
@@ -41,7 +27,7 @@ public final class PropertyMapper {
             properties.add(descriptor);
         }
 
-        final List<Class<?>> classes = collectClassAndAllParents(clazz);
+        final List<Class<?>> classes = collectClassAndAllParents(type);
         final int maxIndex = getFieldsCount(classes);
 
         properties.sort(Comparator.comparing(property -> {

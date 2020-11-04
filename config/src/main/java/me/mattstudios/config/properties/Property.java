@@ -1,5 +1,6 @@
 package me.mattstudios.config.properties;
 
+import me.mattstudios.config.internal.yaml.Indentation;
 import me.mattstudios.config.internal.yaml.YamlManager;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -20,11 +21,8 @@ public interface Property<T> {
     @NotNull
     T determineValue(@NotNull final YamlManager yamlManager);
 
-    @Nullable
-    List<String> getComments();
-
     @NotNull
-    String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final String indentation);
+    String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final Indentation indentation);
 
     @NotNull
     @Contract("_ -> new")

@@ -4,6 +4,7 @@ import me.mattstudios.config.annotations.Comment
 import me.mattstudios.config.annotations.Description
 import me.mattstudios.config.annotations.Name
 import me.mattstudios.config.annotations.Path
+import me.mattstudios.config.internal.bean.PropertyMapper
 import me.mattstudios.config.properties.Property
 import java.io.File
 
@@ -11,6 +12,7 @@ import java.io.File
  * @author Matt
  */
 
+interface Tost
 data class Test(
         @Comment("Comment test")
         var name: String = "Matt",
@@ -18,7 +20,7 @@ data class Test(
         var versionNumber: String = "1.0-SNAPSHOT",
         var number: Int = 5,
         var child: Child = Child()
-)
+) : Tost
 
 data class Child(
         var name: String = "Child",
@@ -37,13 +39,12 @@ fun main() {
     val test = config.getProperty(Settings.SIXTH2)
     println(test)
     println(config.getProperty(Settings.SEVENTH))
-    println(config.getProperty(Settings.EIGHT))
 
     //println(gson.toJson(Test()))
 
-    //val test = Test()
+    val testBean: Tost = Test()
 
-    //PropertyMapper(test)
+    PropertyMapper(testBean)
 
 
     /*val settingsManager = ConfigManager()SettingsManagerBuilder.withYamlFile(File("testing-files", "config.yml"))
@@ -79,16 +80,16 @@ object Settings : ConfigHolder {
     @Path("nested.list")
     val SIXTH = Property.create(listOf(1, 2))
 
-    @Path("nested.list2")
+    @Path("list2")
     val SIXTH2 = Property.create(listOf("Hello", "Mate"))
 
     @Comment("Added an empty line above")
     @Path("nested.enum")
     val SEVENTH = Property.create(TestEnum.VALUE1)
 
-    @Comment("Some comments")
-    @Path("nested.map")
-    val EIGHT = Property.create(mapOf("test" to 5, "more" to 10))
+    //@Comment("Some comments")
+    //@Path("nested.map")
+    //val EIGHT = Property.create(mapOf("test" to 5, "more" to 10))
 
     //@Path("nested.bean")
     //val NINE = Property.create(Test())

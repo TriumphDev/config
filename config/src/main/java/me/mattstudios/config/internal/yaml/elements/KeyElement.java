@@ -1,5 +1,6 @@
 package me.mattstudios.config.internal.yaml.elements;
 
+import me.mattstudios.config.internal.yaml.Indentation;
 import org.jetbrains.annotations.NotNull;
 
 public final class KeyElement extends BaseElement {
@@ -14,7 +15,13 @@ public final class KeyElement extends BaseElement {
     @NotNull
     @Override
     public String getValue(@NotNull final String indentation) {
-        return indentation + key + ":";
+        return new Indentation(indentation, getIndentationLevel()).getCurrentIndentation() + key + ":";
     }
 
+    @Override
+    public String toString() {
+        return "KeyElement{" +
+                "key='" + key + '\'' +
+                ", indentation=" + getIndentationLevel() + "}";
+    }
 }

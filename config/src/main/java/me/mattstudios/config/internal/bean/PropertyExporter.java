@@ -3,11 +3,11 @@ package me.mattstudios.config.internal.bean;
 import me.mattstudios.config.internal.bean.types.Exporter;
 import me.mattstudios.config.internal.bean.types.NormalExporter;
 import me.mattstudios.config.internal.bean.types.StringExporter;
+import me.mattstudios.config.internal.yaml.Indentation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +35,7 @@ public final class PropertyExporter {
 
     private PropertyExporter() {}
 
-    public static String exportValue(@NotNull final Object value, @NotNull final Class<?> type, @NotNull final String indentation) {
+    public static String exportValue(@NotNull final Object value, @NotNull final Class<?> type, @NotNull final Indentation indentation) {
         // Exports simple properties
         String simpleValue = getSimpleObject(value);
         if (simpleValue != null) {
@@ -49,13 +49,13 @@ public final class PropertyExporter {
         }
 
         // Bean
-        Map<String, Object> mappedBean = new LinkedHashMap<>();
+        /*Map<String, Object> mappedBean = new LinkedHashMap<>();
         for (BeanPropertyDescription property : beanDescriptionFactory.getAllProperties(value.getClass())) {
             Object exportValueOfProperty = toExportValue(property.getValue(value));
             if (exportValueOfProperty != null) {
                 mappedBean.put(property.getName(), exportValueOfProperty);
             }
-        }
+        }*/
 
         return "";
     }
@@ -70,7 +70,7 @@ public final class PropertyExporter {
         return exporter.export(value, type);
     }
 
-    private static String getCollectionObject(@NotNull final Object value, @NotNull final Class<?> type, @NotNull final String indentation) {
+    private static String getCollectionObject(@NotNull final Object value, @NotNull final Class<?> type, @NotNull final Indentation indentation) {
         if (type != List.class) return null;
 
         final StringBuilder builder = new StringBuilder();
@@ -80,7 +80,8 @@ public final class PropertyExporter {
         builder.append("\n");
         final Iterator<Object> iterator = list.iterator();
         while (iterator.hasNext()) {
-            builder.append(indentation).append("  - ").append(getSimpleObject(iterator.next()));
+            builder.append(indentation.getCurrentIndentation())
+                    .append("  - ").append(getSimpleObject(iterator.next()));
             if (iterator.hasNext()) builder.append("\n");
         }
 

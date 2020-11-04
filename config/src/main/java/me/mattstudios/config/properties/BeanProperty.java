@@ -1,5 +1,6 @@
 package me.mattstudios.config.properties;
 
+import me.mattstudios.config.internal.yaml.Indentation;
 import me.mattstudios.config.internal.yaml.YamlManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +26,7 @@ public final class BeanProperty<T> extends BaseProperty<T> {
 
     @NotNull
     @Override
-    public String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final String indentation) {
+    public String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final Indentation indentation) {
         return "";
     }
 

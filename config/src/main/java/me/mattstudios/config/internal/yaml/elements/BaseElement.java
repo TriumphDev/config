@@ -8,7 +8,6 @@ public abstract class BaseElement implements Element {
         this.indentationLevel = indentationLevel;
     }
 
-    @Override
     public int getIndentationLevel() {
         return indentationLevel;
     }

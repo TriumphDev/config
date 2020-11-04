@@ -1,7 +1,6 @@
 package me.mattstudios.config.internal.yaml;
 
 import me.mattstudios.config.internal.data.ConfigData;
-import me.mattstudios.config.internal.yaml.elements.CommentElement;
 import me.mattstudios.config.internal.yaml.elements.Element;
 import me.mattstudios.config.internal.yaml.elements.KeyElement;
 import me.mattstudios.config.internal.yaml.elements.PropertyElement;
@@ -22,6 +21,11 @@ public final class PropertyScanner {
 
     public PropertyScanner(@NotNull final ConfigData configData) {
         createElements(mapProperties(configData), 0, configData);
+
+        for (Element element : elements) {
+            System.out.println(element);
+        }
+
     }
 
     private void createElements(@NotNull final Map<String, Object> mappedProperties, final int indentation, @NotNull final ConfigData configData) {
@@ -36,11 +40,6 @@ public final class PropertyScanner {
                 if (property instanceof OptionalProperty) {
                     final Optional<?> optional = (Optional<?>) propertyValue;
                     if (!optional.isPresent()) continue;
-                }
-
-                final List<String> comments = property.getComments();
-                if (comments != null) {
-                    elements.add(new CommentElement(indentation, comments));
                 }
 
                 elements.add(new PropertyElement(indentation, entry.getKey(), property, configData.get(property)));

@@ -1,5 +1,6 @@
 package me.mattstudios.config.properties;
 
+import me.mattstudios.config.internal.yaml.Indentation;
 import me.mattstudios.config.internal.yaml.YamlManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +25,7 @@ public final class OptionalProperty<T> extends BaseProperty<Optional<T>> {
 
     @NotNull
     @Override
-    public String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final String indentation) {
+    public String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final Indentation indentation) {
         //noinspection unchecked
         final Optional<T> optional = (Optional<T>) value;
 

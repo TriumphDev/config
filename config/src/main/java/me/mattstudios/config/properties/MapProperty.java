@@ -1,5 +1,6 @@
 package me.mattstudios.config.properties;
 
+import me.mattstudios.config.internal.yaml.Indentation;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -15,7 +16,7 @@ public final class MapProperty<T> extends BaseProperty<T> {
 
     @NotNull
     @Override
-    public String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final String indentation) {
+    public String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final Indentation indentation) {
         final StringBuilder builder = new StringBuilder();
 
         DumperOptions options = new DumperOptions();
@@ -24,11 +25,12 @@ public final class MapProperty<T> extends BaseProperty<T> {
 
         final Iterator<String> iterator = Arrays.asList(new Yaml(options).dump(value).split("\n")).iterator();
 
-        builder.append(indentation).append(key).append(":\n");
+        //builder.append(indentation).append(key).append(":\n");
 
         while (iterator.hasNext()) {
-            builder.append(indentation).append("  ").append(iterator.next());
-            if (iterator.hasNext()) builder.append("\n");
+            //builder.append(indentation).append("  ").append(iterator.next());
+            //if (iterator.hasNext()) builder.append("\n");
+            break;
         }
 
         return builder.toString();
