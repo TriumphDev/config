@@ -1,41 +1,66 @@
 package me.mattstudios.config.properties;
 
-import me.mattstudios.config.internal.yaml.Indentation;
-import me.mattstudios.config.internal.yaml.YamlManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import me.mattstudios.config.properties.convertresult.PropertyValue;
+import me.mattstudios.config.resource.PropertyReader;
 
 import java.util.Optional;
 
-public final class OptionalProperty<T> extends BaseProperty<Optional<T>> {
+/**
+ * Property which may be empty.
+ * <p>
+ * Wraps another property with an {@link Optional}: if a property is not present in the property resource,
+ * {@link Optional#empty} is returned.
+ */
+public class OptionalProperty<T> implements Property<Optional<T>> {
 
-    @NotNull
-    private final Class<T> type;
+    private final Property<T> baseProperty;
+    private final Optional<T> defaultValue;
 
-    public OptionalProperty(@Nullable final T defaultValue, @NotNull final Class<T> type) {
-        super(Optional.ofNullable(defaultValue));
-        this.type = type;
+    public OptionalProperty(Property<T> baseProperty) {
+        this.baseProperty = baseProperty;
+        this.defaultValue = Optional.empty();
     }
 
-    @NotNull
-    @Override
-    public Optional<T> determineValue(@NotNull final YamlManager yamlManager) {
-        return Optional.ofNullable(yamlManager.getValue(getPath(), type));
+    public OptionalProperty(Property<T> baseProperty, T defaultValue) {
+        this.baseProperty = baseProperty;
+        this.defaultValue = Optional.of(defaultValue);
     }
 
-    @NotNull
     @Override
-    public String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final Indentation indentation) {
-        //noinspection unchecked
-        final Optional<T> optional = (Optional<T>) value;
+    public String getPath() {
+        return baseProperty.getPath();
+    }
 
-        if (optional.isPresent()) {
-            final T object = optional.get();
-            if (type.equals(String.class)) return indentation + key + ": \"" + object + '"';
-            return indentation + key + ": " + object;
+    @Override
+    public PropertyValue<Optional<T>> determineValue(PropertyReader reader) {
+        PropertyValue<T> basePropertyValue = baseProperty.determineValue(reader);
+        Optional<T> value = basePropertyValue.isValidInResource()
+            ? Optional.ofNullable(basePropertyValue.getValue())
+            : Optional.empty();
+
+        // Propagate the false "valid" property if the reader has a value at the base property's path
+        // and the base property says it's invalid -> triggers a rewrite to get rid of the invalid value.
+        boolean isWrongInResource = !basePropertyValue.isValidInResource() && reader.contains(baseProperty.getPath());
+        return isWrongInResource
+            ? PropertyValue.withValueRequiringRewrite(value)
+            : PropertyValue.withValidValue(value);
+    }
+
+    @Override
+    public Optional<T> getDefaultValue() {
+        return defaultValue;
+    }
+
+    @Override
+    public boolean isValidValue(Optional<T> value) {
+        if (value == null) {
+            return false;
         }
-
-        return "";
+        return value.map(baseProperty::isValidValue).orElse(true);
     }
 
+    @Override
+    public Object toExportValue(Optional<T> value) {
+        return value.map(baseProperty::toExportValue).orElse(null);
+    }
 }

@@ -1,97 +1,76 @@
 package me.mattstudios.config.properties;
 
-import me.mattstudios.config.internal.bean.PropertyExporter;
-import me.mattstudios.config.internal.yaml.Indentation;
-import me.mattstudios.config.internal.yaml.YamlManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
+import me.mattstudios.config.properties.convertresult.PropertyValue;
+import me.mattstudios.config.resource.PropertyReader;
 
-import java.util.List;
+import javax.annotation.Nullable;
+import java.util.Objects;
 
+/**
+ * Base implementation of {@link Property}. All properties should extend from this class.
+ * <p>
+ * This base implementation makes interacting with properties null safe by guaranteeing that the default value
+ * and its {@link #determineValue determined value} can never be null.
+ *
+ * @param <T> the property type
+ */
 public abstract class BaseProperty<T> implements Property<T> {
 
-    @NotNull
-    private String path = "";
-    @NotNull
+    private final String path;
     private final T defaultValue;
-    @Nullable
-    private List<String> comments;
-    @Nullable
-    private final Class<T> type;
 
-    public BaseProperty(@NotNull final T defaultValue, @Nullable final Class<T> type) {
-        this.defaultValue = defaultValue;
-        this.type = type;
-    }
-
-    public BaseProperty(@NotNull final T defaultValue) {
-        this(defaultValue, null);
-    }
-
-    public void setPath(@NotNull final String path) {
+    /**
+     * Constructor.
+     *
+     * @param path the path of the property
+     * @param defaultValue the default value of the property
+     */
+    public BaseProperty(String path, T defaultValue) {
+        Objects.requireNonNull(path, "path");
+        Objects.requireNonNull(defaultValue, "defaultValue");
         this.path = path;
+        this.defaultValue = defaultValue;
     }
 
-    @NotNull
     @Override
     public String getPath() {
         return path;
     }
 
-    @NotNull
     @Override
     public T getDefaultValue() {
         return defaultValue;
     }
 
-    @NotNull
     @Override
-    public T determineValue(@NotNull final YamlManager yamlManager) {
-        final T value = yamlManager.getValue(getPath(), type);
-        if (value == null) return getDefaultValue();
-        return value;
-    }
-
-    @Override
-    public @NotNull String getExportValue(@NotNull final String key, @NotNull final Object value, @NotNull final Indentation indentation) {
-        final Class<T> type = getType();
-        if (type == null) return "";
-
-        return exportComments(indentation) +
-                indentation.getCurrentIndentation() +
-                key +
-                ": " +
-                PropertyExporter.exportValue(value, type, indentation);
-    }
-
-    protected String exportComments(@NotNull final Indentation indentation) {
-        if (comments == null) return "";
-
-        final StringBuilder builder = new StringBuilder();
-        for (final String comment : comments) {
-            if (!comment.isEmpty() && !"\n".equals(comment)) {
-                builder.append(indentation.getCurrentIndentation()).append("# ");
-            }
-
-            builder.append(comment).append("\n");
+    public PropertyValue<T> determineValue(PropertyReader reader) {
+        ConvertErrorRecorder errorRecorder = new ConvertErrorRecorder();
+        T value = getFromReader(reader, errorRecorder);
+        if (isValidValue(value)) {
+            return new PropertyValue<>(value, errorRecorder.isFullyValid());
         }
-        return builder.toString();
+        return PropertyValue.withValueRequiringRewrite(getDefaultValue());
     }
 
-    public void setComments(@Nullable final List<String> comments) {
-        this.comments = comments;
+    @Override
+    public boolean isValidValue(T value) {
+        return value != null;
     }
 
+    /**
+     * Constructs the value of the property from the property reader. Returns null if no value is
+     * available in the reader or if it cannot be used to construct a value for this property.
+     *
+     * @param reader the reader to read from
+     * @param errorRecorder error recorder to register errors even if a valid value is returned
+     * @return value based on the reader, or null if not applicable
+     */
     @Nullable
-    protected Class<T> getType() {
-        return type;
-    }
+    protected abstract T getFromReader(PropertyReader reader, ConvertErrorRecorder errorRecorder);
 
     @Override
     public String toString() {
-        return "Property{" +
-                "path='" + path + '\'' +
-                '}';
+        return "Property '" + path + "'";
     }
-
 }

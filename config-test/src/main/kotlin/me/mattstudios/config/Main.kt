@@ -1,31 +1,13 @@
 package me.mattstudios.config
 
-import me.mattstudios.config.annotations.Comment
-import me.mattstudios.config.annotations.Description
-import me.mattstudios.config.annotations.Name
-import me.mattstudios.config.annotations.Path
-import me.mattstudios.config.internal.bean.PropertyMapper
-import me.mattstudios.config.properties.Property
+import com.google.gson.Gson
 import java.io.File
 
 /**
  * @author Matt
  */
 
-interface Tost
-data class Test(
-        @Comment("Comment test")
-        var name: String = "Matt",
-        @Name("version-number")
-        var versionNumber: String = "1.0-SNAPSHOT",
-        var number: Int = 5,
-        var child: Child = Child()
-) : Tost
-
-data class Child(
-        var name: String = "Child",
-        var number: Int = 10
-)
+val gson = Gson()
 
 fun main() {
 
@@ -39,13 +21,9 @@ fun main() {
     val test = config.getProperty(Settings.SIXTH2)
     println(test)
     println(config.getProperty(Settings.SEVENTH))
+    println(config.getProperty(Settings.EIGHTH))
 
     //println(gson.toJson(Test()))
-
-    val testBean: Tost = Test()
-
-    PropertyMapper(testBean)
-
 
     /*val settingsManager = ConfigManager()SettingsManagerBuilder.withYamlFile(File("testing-files", "config.yml"))
             .useDefaultMigrationService()
@@ -53,10 +31,10 @@ fun main() {
             .create()*/
 
     //println(settingsManager.getProperty(Settings.HELLO))
-
 }
 
-@Description("Description comment will go at the top of file!")
+
+/*@Description("Description comment will go at the top of file!")
 object Settings : ConfigHolder {
 
     @Path("string")
@@ -87,14 +65,21 @@ object Settings : ConfigHolder {
     @Path("nested.enum")
     val SEVENTH = Property.create(TestEnum.VALUE1)
 
-    //@Comment("Some comments")
-    //@Path("nested.map")
-    //val EIGHT = Property.create(mapOf("test" to 5, "more" to 10))
+    @Path("bean")
+    val EIGHTH = Property.create(Test())
 
-    //@Path("nested.bean")
-    //val NINE = Property.create(Test())
+}*/
 
-}
+data class Test(
+        var name: String = "Matt",
+        var list: Map<String, Child> = mapOf("first" to Child("Jeu"), "second" to Child("heu")),
+        var child: Child = Child("Shit")
+)
+
+data class Child(
+        var name: String = "Child test",
+        var number: Int = 10
+)
 
 public enum class TestEnum {
 

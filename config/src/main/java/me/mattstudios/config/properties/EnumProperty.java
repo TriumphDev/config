@@ -1,31 +1,15 @@
 package me.mattstudios.config.properties;
 
-import me.mattstudios.config.internal.yaml.YamlManager;
-import org.jetbrains.annotations.NotNull;
+import me.mattstudios.config.properties.types.EnumPropertyType;
 
-public final class EnumProperty<T extends Enum<T>> extends BaseProperty<T> {
+/**
+ * Enum property.
+ *
+ * @param <E> the enum type
+ */
+public class EnumProperty<E extends Enum<E>> extends TypeBasedProperty<E> {
 
-    public EnumProperty(@NotNull final T defaultValue, @NotNull final Class<T> type) {
-        super(defaultValue, type);
+    public EnumProperty(Class<E> clazz, String path, E defaultValue) {
+        super(path, defaultValue, EnumPropertyType.of(clazz));
     }
-
-    @NotNull
-    @Override
-    public T determineValue(@NotNull final YamlManager yamlManager) {
-        final String enumValue = yamlManager.getValue(getPath(), String.class);
-        if (enumValue == null) return getDefaultValue();
-
-        Enum<T> value = null;
-
-        final Class<T> type = getType();
-        if (type == null) return getDefaultValue();
-
-        for (final Enum<T> enm : type.getEnumConstants()) {
-            if (enm.name().equalsIgnoreCase(enumValue)) value = enm;
-        }
-
-        if (value == null) return getDefaultValue();
-        return (T) value;
-    }
-
 }
