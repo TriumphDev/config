@@ -19,12 +19,12 @@ public class InlineArrayProperty<T> extends BaseProperty<T[]> {
     /**
      * Constructor.
      *
-     * @param path the path of the property
-     * @param defaultValue the default value of the property
+     * @param path            the path of the property
+     * @param defaultValue    the default value of the property
      * @param inlineConverter the inline converter to use
      */
     public InlineArrayProperty(String path, T[] defaultValue, InlineArrayConverter<T> inlineConverter) {
-        super(path, defaultValue);
+        super(defaultValue);
         Objects.requireNonNull(inlineConverter, "inlineConverter");
         this.inlineConverter = inlineConverter;
     }

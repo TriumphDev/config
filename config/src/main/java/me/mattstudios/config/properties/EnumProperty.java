@@ -1,6 +1,7 @@
 package me.mattstudios.config.properties;
 
 import me.mattstudios.config.properties.types.EnumPropertyType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Enum property.
@@ -9,7 +10,8 @@ import me.mattstudios.config.properties.types.EnumPropertyType;
  */
 public class EnumProperty<E extends Enum<E>> extends TypeBasedProperty<E> {
 
-    public EnumProperty(Class<E> clazz, String path, E defaultValue) {
-        super(path, defaultValue, EnumPropertyType.of(clazz));
+    public EnumProperty(@NotNull final Class<E> clazz, @NotNull final E defaultValue) {
+        super(defaultValue, EnumPropertyType.of(clazz));
     }
+
 }

@@ -16,13 +16,13 @@ public class ArrayProperty<T> extends BaseProperty<T[]> {
     /**
      * Constructor.
      *
-     * @param path the path of the property
-     * @param defaultValue the default value of the property
-     * @param type the property type
+     * @param path          the path of the property
+     * @param defaultValue  the default value of the property
+     * @param type          the property type
      * @param arrayProducer array constructor (desired array size as argument)
      */
     public ArrayProperty(String path, T[] defaultValue, PropertyType<T> type, IntFunction<T[]> arrayProducer) {
-        super(path, defaultValue);
+        super(defaultValue);
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(arrayProducer, "arrayProducer");
         this.type = type;
@@ -35,9 +35,9 @@ public class ArrayProperty<T> extends BaseProperty<T[]> {
         if (object instanceof Collection<?>) {
             Collection<?> collection = (Collection<?>) object;
             return collection.stream()
-                .map(elem -> type.convert(elem, errorRecorder))
-                .filter(Objects::nonNull)
-                .toArray(arrayProducer);
+                    .map(elem -> type.convert(elem, errorRecorder))
+                    .filter(Objects::nonNull)
+                    .toArray(arrayProducer);
         }
         return null;
     }

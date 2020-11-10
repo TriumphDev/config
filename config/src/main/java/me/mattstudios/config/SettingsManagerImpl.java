@@ -5,6 +5,7 @@ import me.mattstudios.config.migration.MigrationService;
 import me.mattstudios.config.properties.Property;
 import me.mattstudios.config.resource.PropertyReader;
 import me.mattstudios.config.resource.PropertyResource;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -52,8 +53,9 @@ public class SettingsManagerImpl implements SettingsManager {
      * @param <T> the property's type
      * @return the property's value
      */
+    @NotNull
     @Override
-    public <T> T getProperty(Property<T> property) {
+    public <T> T getProperty(@NotNull final Property<T> property) {
         return configurationData.getValue(property);
     }
 
@@ -65,7 +67,7 @@ public class SettingsManagerImpl implements SettingsManager {
      * @param <T> the property's type
      */
     @Override
-    public <T> void setProperty(Property<T> property, T value) {
+    public <T> void setProperty(@NotNull final Property<T> property, @NotNull final T value) {
         configurationData.setValue(property, value);
     }
 

@@ -11,19 +11,19 @@ import java.util.Optional;
  * Wraps another property with an {@link Optional}: if a property is not present in the property resource,
  * {@link Optional#empty} is returned.
  */
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class OptionalProperty<T> implements Property<Optional<T>> {
 
     private final Property<T> baseProperty;
     private final Optional<T> defaultValue;
 
-    public OptionalProperty(Property<T> baseProperty) {
-        this.baseProperty = baseProperty;
-        this.defaultValue = Optional.empty();
-    }
-
     public OptionalProperty(Property<T> baseProperty, T defaultValue) {
         this.baseProperty = baseProperty;
         this.defaultValue = Optional.of(defaultValue);
+    }
+
+    public Property<T> getBaseProperty() {
+        return baseProperty;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class OptionalProperty<T> implements Property<Optional<T>> {
 
     @Override
     public boolean isValidValue(Optional<T> value) {
-        if (value == null) {
+        if (value.isEmpty()) {
             return false;
         }
         return value.map(baseProperty::isValidValue).orElse(true);
@@ -63,4 +63,5 @@ public class OptionalProperty<T> implements Property<Optional<T>> {
     public Object toExportValue(Optional<T> value) {
         return value.map(baseProperty::toExportValue).orElse(null);
     }
+
 }

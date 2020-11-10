@@ -1,6 +1,7 @@
 package me.mattstudios.config.utils;
 
 import me.mattstudios.config.exception.ConfigMeException;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,13 +36,14 @@ public final class Utils {
      *
      * @param file the file to create if it doesn't exist
      */
-    public static void createFileIfNotExists(Path file) {
+    public static void createFileIfNotExists(@NotNull final Path file) {
         if (Files.exists(file)) {
+            System.out.println("huh?");
             if (!Files.isRegularFile(file)) {
                 throw new ConfigMeException("Expected file but '" + file + "' is not a file");
             }
         } else {
-            Path parent = file.getParent();
+            final Path parent = file.getParent();
             if (!Files.exists(parent) || !Files.isDirectory(parent)) {
                 try {
                     Files.createDirectories(parent);

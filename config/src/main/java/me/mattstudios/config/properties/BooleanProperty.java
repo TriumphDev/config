@@ -8,6 +8,6 @@ import me.mattstudios.config.properties.types.PrimitivePropertyType;
 public class BooleanProperty extends TypeBasedProperty<Boolean> {
 
     public BooleanProperty(String path, Boolean defaultValue) {
-        super(path, defaultValue, PrimitivePropertyType.BOOLEAN);
+        super(defaultValue, PrimitivePropertyType.BOOLEAN);
     }
 }

@@ -27,7 +27,7 @@ public class MapProperty<V> extends BaseProperty<Map<String, V>> {
      * @param type the property type of the values
      */
     public MapProperty(String path, Map<String, V> defaultValue, PropertyType<V> type) {
-        super(path, Collections.unmodifiableMap(defaultValue));
+        super(Collections.unmodifiableMap(defaultValue));
         Objects.requireNonNull(type, "type");
         this.type = type;
     }

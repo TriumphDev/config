@@ -5,7 +5,18 @@ dependencies {
 
     implementation "org.yaml:snakeyaml:1.25"
     implementation "com.google.guava:guava:30.0-jre"
+
     compileOnly "org.jetbrains:annotations:20.0.0"
+
+    testCompile "org.junit.jupiter:junit-jupiter-engine:5.5.2"
+    testCompile "org.junit.jupiter:junit-jupiter-params:5.5.2"
+    testCompile "org.hamcrest:java-hamcrest:2.0.0.0"
+
+    testCompile("org.mockito:mockito-core:3.2.4") {
+        exclude group: "org.hamcrest", module: "hamcrest-core"
+    }
+
+    testCompile "org.mockito:mockito-junit-jupiter:3.2.4"
 
 }
 

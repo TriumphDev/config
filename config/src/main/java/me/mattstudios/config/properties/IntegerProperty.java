@@ -8,6 +8,6 @@ import me.mattstudios.config.properties.types.PrimitivePropertyType;
 public class IntegerProperty extends TypeBasedProperty<Integer> {
 
     public IntegerProperty(String path, Integer defaultValue) {
-        super(path, defaultValue, PrimitivePropertyType.INTEGER);
+        super(defaultValue, PrimitivePropertyType.INTEGER);
     }
 }

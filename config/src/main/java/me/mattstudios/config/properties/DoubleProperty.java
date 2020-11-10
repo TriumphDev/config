@@ -8,6 +8,6 @@ import me.mattstudios.config.properties.types.PrimitivePropertyType;
 public class DoubleProperty extends TypeBasedProperty<Double> {
 
     public DoubleProperty(String path, double defaultValue) {
-        super(path, defaultValue, PrimitivePropertyType.DOUBLE);
+        super(defaultValue, PrimitivePropertyType.DOUBLE);
     }
 }

@@ -26,7 +26,7 @@ public class LowercaseStringSetProperty extends BaseProperty<Set<String>> {
      * @param defaultEntries entries in the Set that is the default value
      */
     public LowercaseStringSetProperty(String path, String... defaultEntries) {
-        super(path, toLowercaseLinkedHashSet(Arrays.stream(defaultEntries)));
+        super(toLowercaseLinkedHashSet(Arrays.stream(defaultEntries)));
     }
 
     /**
@@ -36,7 +36,7 @@ public class LowercaseStringSetProperty extends BaseProperty<Set<String>> {
      * @param defaultEntries entries in the Set that is the default value
      */
     public LowercaseStringSetProperty(String path, Collection<String> defaultEntries) {
-        super(path, toLowercaseLinkedHashSet(defaultEntries.stream()));
+        super(toLowercaseLinkedHashSet(defaultEntries.stream()));
     }
 
     @Override

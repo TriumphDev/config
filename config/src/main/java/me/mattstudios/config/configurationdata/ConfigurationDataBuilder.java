@@ -1,8 +1,11 @@
 package me.mattstudios.config.configurationdata;
 
-import me.mattstudios.config.annotations.Comment;
 import me.mattstudios.config.SettingsHolder;
+import me.mattstudios.config.annotations.Comment;
+import me.mattstudios.config.annotations.Path;
 import me.mattstudios.config.exception.ConfigMeException;
+import me.mattstudios.config.properties.BaseProperty;
+import me.mattstudios.config.properties.OptionalProperty;
 import me.mattstudios.config.properties.Property;
 
 import javax.annotation.Nullable;
@@ -61,7 +64,7 @@ public class ConfigurationDataBuilder {
     }
 
     public static ConfigurationData createConfiguration(List<? extends Property<?>> properties,
-                                                        CommentsConfiguration commentsConfiguration) {
+            CommentsConfiguration commentsConfiguration) {
         return new ConfigurationDataImpl(properties, commentsConfiguration.getAllComments());
     }
 
@@ -110,12 +113,33 @@ public class ConfigurationDataBuilder {
      */
     @Nullable
     protected Property<?> getPropertyField(Field field) {
+        field.setAccessible(true);
         if (Property.class.isAssignableFrom(field.getType()) && Modifier.isStatic(field.getModifiers())) {
             try {
-                return (Property<?>) field.get(null);
+
+                if (!field.isAnnotationPresent(Path.class)) {
+                    throw new ConfigMeException("Missing path annotation for field '" + field.getName() + "' from class '"
+                                                        + field.getDeclaringClass().getSimpleName() + "'.");
+                }
+                final String path = field.getAnnotation(Path.class).value();
+                final Property<?> property = (Property<?>) field.get(null);
+
+                if (property instanceof BaseProperty) {
+                    final BaseProperty<?> baseProperty = (BaseProperty<?>) field.get(null);
+                    baseProperty.setPath(path);
+                    return baseProperty;
+                }
+
+                if (property instanceof OptionalProperty) {
+                    final BaseProperty<?> baseProperty = (BaseProperty<?>) ((OptionalProperty<?>) field.get(null)).getBaseProperty();
+                    baseProperty.setPath(path);
+                    return baseProperty;
+                }
+
+                return property;
             } catch (IllegalAccessException e) {
                 throw new ConfigMeException("Could not fetch field '" + field.getName() + "' from class '"
-                    + field.getDeclaringClass().getSimpleName() + "'. Is it maybe not public?", e);
+                                                    + field.getDeclaringClass().getSimpleName() + "'.", e);
             }
         }
         return null;
@@ -130,7 +154,7 @@ public class ConfigurationDataBuilder {
      * Creates an instance of the given settings holder class.
      *
      * @param clazz the class to instantiate
-     * @param <T> the class type
+     * @param <T>   the class type
      * @return instance of the class
      */
     protected <T extends SettingsHolder> T createSettingsHolderInstance(Class<T> clazz) {
@@ -167,7 +191,7 @@ public class ConfigurationDataBuilder {
         Collections.reverse(classes);
 
         return classes.stream()
-            .map(Class::getDeclaredFields)
-            .flatMap(Arrays::stream);
+                .map(Class::getDeclaredFields)
+                .flatMap(Arrays::stream);
     }
 }

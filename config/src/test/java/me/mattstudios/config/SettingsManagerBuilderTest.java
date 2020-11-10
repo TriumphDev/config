@@ -49,7 +49,7 @@ class SettingsManagerBuilderTest {
         ConfigurationData configurationData = mock(ConfigurationData.class);
 
         // when
-        SettingsManagerImpl settingsManager = (SettingsManagerImpl) SettingsManagerBuilder.withResource(resource)
+        SettingsManagerImpl settingsManager = (SettingsManagerImpl) SettingsManager.from(resource)
             .configurationData(configurationData)
             .migrationService(migrationService)
             .create();
@@ -69,7 +69,7 @@ class SettingsManagerBuilderTest {
         ConfigurationData configurationData = mock(ConfigurationData.class);
 
         // when
-        SettingsManagerImpl settingsManager = (SettingsManagerImpl) SettingsManagerBuilder.withYamlFile(configFile)
+        SettingsManagerImpl settingsManager = (SettingsManagerImpl) SettingsManager.from(configFile)
             .configurationData(configurationData)
             .useDefaultMigrationService()
             .create();
@@ -89,7 +89,7 @@ class SettingsManagerBuilderTest {
         given(resource.createReader()).willReturn(mock(PropertyReader.class));
 
         // when
-        SettingsManagerImpl settingsManager = (SettingsManagerImpl) SettingsManagerBuilder.withResource(resource)
+        SettingsManagerImpl settingsManager = (SettingsManagerImpl) SettingsManager.from(resource)
             .configurationData(TestConfiguration.class)
             .create();
 
@@ -110,7 +110,7 @@ class SettingsManagerBuilderTest {
         long initialFileSize = Files.size(file);
 
         // when
-        SettingsManagerImpl manager = (SettingsManagerImpl) SettingsManagerBuilder.withYamlFile(file)
+        SettingsManagerImpl manager = (SettingsManagerImpl) SettingsManager.from(file)
             .configurationData(TestConfiguration.class)
             .useDefaultMigrationService()
             .create();
@@ -133,7 +133,7 @@ class SettingsManagerBuilderTest {
         File file = new File(fileUrl.toURI());
 
         // when
-        SettingsManager settingsManager = SettingsManagerBuilder.withYamlFile(file)
+        SettingsManager settingsManager = SettingsManager.from(file)
             .configurationData(TestConfiguration.class)
             .create();
 
@@ -149,7 +149,7 @@ class SettingsManagerBuilderTest {
         YamlFileResourceOptions options = YamlFileResourceOptions.builder().build();
 
         // when
-        SettingsManager settingsManager = SettingsManagerBuilder.withYamlFile(file, options)
+        SettingsManager settingsManager = SettingsManager.from(file, options)
             .configurationData(TestConfiguration.class)
             .create();
 

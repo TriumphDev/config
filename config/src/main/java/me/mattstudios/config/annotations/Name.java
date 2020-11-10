@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * should be loaded and written to a property resource with a different name.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Documented
 public @interface Name {
 

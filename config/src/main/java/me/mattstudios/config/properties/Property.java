@@ -3,9 +3,17 @@ package me.mattstudios.config.properties;
 import me.mattstudios.config.configurationdata.ConfigurationDataImpl;
 import me.mattstudios.config.migration.MigrationService;
 import me.mattstudios.config.properties.convertresult.PropertyValue;
+import me.mattstudios.config.properties.types.EnumPropertyType;
+import me.mattstudios.config.properties.types.PrimitivePropertyType;
 import me.mattstudios.config.resource.PropertyReader;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Property interface. A property knows its path, its type, and can convert the values from
@@ -85,5 +93,136 @@ public interface Property<T> {
      */
     @Nullable
     Object toExportValue(T value);
+
+    /**
+     * Creates a new boolean property.
+     *
+     * @param defaultValue the default value
+     * @return the created property
+     */
+    @NotNull
+    @Contract("_ -> new")
+    static Property<Boolean> create(final boolean defaultValue) {
+        return new BooleanProperty("bool", defaultValue);
+    }
+
+    /**
+     * Creates a new integer property.
+     *
+     * @param defaultValue the default value
+     * @return the created property
+     */
+    @NotNull
+    @Contract("_ -> new")
+    static Property<Integer> create(final int defaultValue) {
+        return new TypeBasedProperty<>(defaultValue, PrimitivePropertyType.INTEGER);
+    }
+
+    /**
+     * Creates a new double property.
+     *
+     * @param defaultValue the default value
+     * @return the created property
+     */
+    @NotNull
+    @Contract("_ -> new")
+    static Property<Double> create(final double defaultValue) {
+        return new TypeBasedProperty<>(defaultValue, PrimitivePropertyType.DOUBLE);
+    }
+
+    /**
+     * Creates a new String property.
+     *
+     * @param defaultValue the default value
+     * @return the created property
+     */
+    @NotNull
+    @Contract("_ -> new")
+    static Property<String> create(@NotNull final String defaultValue) {
+        return new TypeBasedProperty<>(defaultValue, PrimitivePropertyType.STRING);
+    }
+
+    /**
+     * Creates a new enum property.
+     *
+     * @param defaultValue the default value
+     * @param <E>          the enum type
+     * @return the created enum property
+     */
+    @NotNull
+    @Contract("_, -> new")
+    static <E extends Enum<E>> Property<E> create(@NotNull final E defaultValue) {
+        //noinspection unchecked
+        return new EnumProperty<>((Class<E>) defaultValue.getClass(), defaultValue);
+    }
+
+    /**
+     * Creates a new String list property.
+     *
+     * @param defaultValue the items in the default list
+     * @return the created list property
+     */
+    @NotNull
+    @Contract("_ -> new")
+    static Property<List<String>> create(@NotNull final List<String> defaultValue) {
+        return new ListProperty<>(PrimitivePropertyType.STRING, defaultValue);
+    }
+
+    /**
+     * Creates a new String set property where all values are lowercase.
+     *
+     * @param path          the property's path
+     * @param defaultValues the items in the default set
+     * @return the created set property
+     */
+    public static Property<Set<String>> newLowercaseStringSetProperty(String path, String... defaultValues) {
+        return new LowercaseStringSetProperty(path, defaultValues);
+    }
+
+    /**
+     * Creates a new String set property where all values are lowercase.
+     *
+     * @param path          the property's path
+     * @param defaultValues the default value of the property
+     * @return the created set property
+     */
+    public static Property<Set<String>> newLowercaseStringSetProperty(String path, Collection<String> defaultValues) {
+        return new LowercaseStringSetProperty(path, defaultValues);
+    }
+
+    /**
+     * Creates a new bean property.
+     *
+     * @param defaultValue default value
+     * @param <B>          the bean type
+     * @return the created bean property
+     */
+    @NotNull
+    @Contract("_ -> new")
+    static <B> Property<B> create(@NotNull final B defaultValue) {
+        //noinspection unchecked
+        return new BeanProperty<>((Class<B>) defaultValue.getClass(), defaultValue);
+    }
+
+    // --------------
+    // Optional flavors
+    // --------------
+    static Property<Optional<Boolean>> createOptional(@Nullable final Boolean defaultValue) {
+        return new OptionalProperty<>(new TypeBasedProperty<>(false, PrimitivePropertyType.BOOLEAN), defaultValue);
+    }
+
+    static Property<Optional<Integer>> createOptional(@Nullable final Integer defaultValue) {
+        return new OptionalProperty<>(new TypeBasedProperty<>(0, PrimitivePropertyType.INTEGER), defaultValue);
+    }
+
+    static Property<Optional<String>> createOptional(@Nullable final String defaultValue) {
+        return new OptionalProperty<>(new TypeBasedProperty<>("", PrimitivePropertyType.STRING), defaultValue);
+    }
+
+    static <E extends Enum<E>> Property<Optional<E>> createOptional(@NotNull final E defaultValue) {
+        // default value may never be null, so get the first entry in the enum class
+        //noinspection unchecked
+        return new OptionalProperty<>(new TypeBasedProperty<E>(defaultValue, EnumPropertyType.of(defaultValue.getClass())), defaultValue);
+    }
 
 }

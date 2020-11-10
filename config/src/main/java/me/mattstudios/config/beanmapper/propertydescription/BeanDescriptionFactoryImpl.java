@@ -3,6 +3,7 @@ package me.mattstudios.config.beanmapper.propertydescription;
 import me.mattstudios.config.beanmapper.ConfigMeMapperException;
 import me.mattstudios.config.annotations.Name;
 import me.mattstudios.config.utils.TypeInformation;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.beans.IntrospectionException;
@@ -55,9 +56,9 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
         List<PropertyDescriptor> descriptors = getWritableProperties(clazz);
 
         List<BeanPropertyDescription> properties = descriptors.stream()
-            .map(this::convert)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+                .map(propertyDescriptor -> convert(propertyDescriptor, clazz))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
         validateProperties(clazz, properties);
         return properties;
@@ -70,22 +71,22 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
      * @return the converted object, or null if the property should be skipped
      */
     @Nullable
-    protected BeanPropertyDescription convert(PropertyDescriptor descriptor) {
+    protected BeanPropertyDescription convert(@NotNull final PropertyDescriptor descriptor, @NotNull final Class<?> type) {
         if (Boolean.TRUE.equals(descriptor.getValue("transient"))) {
             return null;
         }
 
         return new BeanPropertyDescriptionImpl(
-            getPropertyName(descriptor),
-            createTypeInfo(descriptor),
-            descriptor.getReadMethod(),
-            descriptor.getWriteMethod());
+                getPropertyName(descriptor, type),
+                createTypeInfo(descriptor),
+                descriptor.getReadMethod(),
+                descriptor.getWriteMethod());
     }
 
     /**
      * Validates the class' properties.
      *
-     * @param clazz the class to which the properties belong
+     * @param clazz      the class to which the properties belong
      * @param properties the properties that will be used on the class
      */
     protected void validateProperties(Class<?> clazz, Collection<BeanPropertyDescription> properties) {
@@ -96,7 +97,7 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
             }
             if (!names.add(property.getName())) {
                 throw new ConfigMeMapperException(
-                    clazz + " has multiple properties with name '" + property.getName() + "'");
+                        clazz + " has multiple properties with name '" + property.getName() + "'");
             }
         });
     }
@@ -107,10 +108,22 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
      * @param descriptor the descriptor to get the name for
      * @return the property name
      */
-    protected String getPropertyName(PropertyDescriptor descriptor) {
+    protected String getPropertyName(@NotNull final PropertyDescriptor descriptor, @NotNull final Class<?> type) {
+        try {
+            final Field field = type.getDeclaredField(descriptor.getName());
+
+            if (field.isAnnotationPresent(Name.class)) {
+                return field.getAnnotation(Name.class).value();
+            }
+        } catch (final NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
         if (descriptor.getReadMethod().isAnnotationPresent(Name.class)) {
             return descriptor.getReadMethod().getAnnotation(Name.class).value();
-        } else if (descriptor.getWriteMethod().isAnnotationPresent(Name.class)) {
+        }
+
+        if (descriptor.getWriteMethod().isAnnotationPresent(Name.class)) {
             return descriptor.getWriteMethod().getAnnotation(Name.class).value();
         }
         return descriptor.getName();
@@ -147,7 +160,7 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
      * Returns a sorted list of the given properties which will be used for further processing and whose
      * order will be maintained. May return the same list.
      *
-     * @param clazz the class from which the properties come from
+     * @param clazz      the class from which the properties come from
      * @param properties the properties to sort
      * @return sorted properties
      */
