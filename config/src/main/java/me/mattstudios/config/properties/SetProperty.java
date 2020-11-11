@@ -53,7 +53,7 @@ public class SetProperty<T> extends BaseProperty<Set<T>> {
 
         if (list != null) {
             return list.stream()
-                .map(elem -> type.convert(elem, errorRecorder))
+                .map(elem -> type.convert(elem, errorRecorder, this))
                 .filter(Objects::nonNull)
                 .collect(setCollector());
         }
@@ -63,7 +63,7 @@ public class SetProperty<T> extends BaseProperty<Set<T>> {
     @Override
     public Object toExportValue(Set<T> value) {
         return value.stream()
-            .map(type::toExportValue)
+            .map(t -> type.toExportValue(t, this))
             .collect(Collectors.toList());
     }
 

@@ -2,7 +2,12 @@ package me.mattstudios.config.properties;
 
 import me.mattstudios.config.properties.convertresult.PropertyValue;
 import me.mattstudios.config.resource.PropertyReader;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -16,6 +21,8 @@ public class OptionalProperty<T> implements Property<Optional<T>> {
 
     private final Property<T> baseProperty;
     private final Optional<T> defaultValue;
+    @NotNull
+    private final Map<String, List<String>> comments = new LinkedHashMap<>();
 
     public OptionalProperty(Property<T> baseProperty, T defaultValue) {
         this.baseProperty = baseProperty;
@@ -53,10 +60,21 @@ public class OptionalProperty<T> implements Property<Optional<T>> {
 
     @Override
     public boolean isValidValue(Optional<T> value) {
-        if (value.isEmpty()) {
+        if (!value.isPresent()) {
             return false;
         }
         return value.map(baseProperty::isValidValue).orElse(true);
+    }
+
+    @Override
+    public void addComments(@NotNull final String path, @NotNull final List<String> comments) {
+        this.comments.put(path, comments);
+    }
+
+    @NotNull
+    @Override
+    public Map<String, List<String>> getComments() {
+        return Collections.unmodifiableMap(comments);
     }
 
     @Override

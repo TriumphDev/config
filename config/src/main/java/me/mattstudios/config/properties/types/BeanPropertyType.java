@@ -2,8 +2,10 @@ package me.mattstudios.config.properties.types;
 
 import me.mattstudios.config.beanmapper.DefaultMapper;
 import me.mattstudios.config.beanmapper.Mapper;
+import me.mattstudios.config.properties.Property;
 import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
 import me.mattstudios.config.utils.TypeInformation;
+import org.jetbrains.annotations.NotNull;
 
 public class BeanPropertyType<B> implements PropertyType<B> {
 
@@ -25,12 +27,12 @@ public class BeanPropertyType<B> implements PropertyType<B> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public B convert(Object object, ConvertErrorRecorder errorRecorder) {
-        return (B) mapper.convertToBean(object, beanType, errorRecorder);
+    public B convert(Object object, ConvertErrorRecorder errorRecorder, @NotNull final Property<?> parentProperty) {
+        return (B) mapper.convertToBean(object, beanType, errorRecorder, parentProperty);
     }
 
     @Override
-    public Object toExportValue(B value) {
-        return mapper.toExportValue(value);
+    public Object toExportValue(final B value, @NotNull final Property<?> parentProperty) {
+        return mapper.toExportValue(value, parentProperty, parentProperty.getPath());
     }
 }

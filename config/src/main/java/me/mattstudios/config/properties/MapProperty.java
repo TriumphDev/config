@@ -45,7 +45,7 @@ public class MapProperty<V> extends BaseProperty<Map<String, V>> {
 
         for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
             String path = entry.getKey().toString();
-            V value = type.convert(entry.getValue(), errorRecorder);
+            V value = type.convert(entry.getValue(), errorRecorder, this);
 
             if (value != null) {
                 map.put(path, value);
@@ -56,11 +56,11 @@ public class MapProperty<V> extends BaseProperty<Map<String, V>> {
     }
 
     @Override
-    public Object toExportValue(Map<String, V> value) {
+    public Object toExportValue(final Map<String, V> value) {
         Map<String, Object> exportMap = new LinkedHashMap<>();
 
         for (Map.Entry<String, V> entry : value.entrySet()) {
-            exportMap.put(entry.getKey(), type.toExportValue(entry.getValue()));
+            exportMap.put(entry.getKey(), type.toExportValue(entry.getValue(), this));
         }
 
         return exportMap;

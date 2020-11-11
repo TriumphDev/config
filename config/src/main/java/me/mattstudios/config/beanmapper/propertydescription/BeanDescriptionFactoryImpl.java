@@ -1,7 +1,8 @@
 package me.mattstudios.config.beanmapper.propertydescription;
 
-import me.mattstudios.config.beanmapper.ConfigMeMapperException;
+import me.mattstudios.config.annotations.Comment;
 import me.mattstudios.config.annotations.Name;
+import me.mattstudios.config.beanmapper.ConfigMeMapperException;
 import me.mattstudios.config.utils.TypeInformation;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,6 +12,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,12 +40,13 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
     /**
      * Returns all properties of the given bean class for which there exists a getter and setter.
      *
-     * @param clazz the bean property to process
+     * @param clazz          the bean property to process
+     * @param parentProperty
      * @return the bean class' properties to handle
      */
     @Override
     public Collection<BeanPropertyDescription> getAllProperties(Class<?> clazz) {
-        return classProperties.computeIfAbsent(clazz, this::collectAllProperties);
+        return classProperties.computeIfAbsent(clazz, aClass -> collectAllProperties(aClass));
     }
 
     /**
@@ -52,7 +55,7 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
      * @param clazz the class to process
      * @return properties of the class
      */
-    protected List<BeanPropertyDescription> collectAllProperties(Class<?> clazz) {
+    protected List<BeanPropertyDescription> collectAllProperties(final Class<?> clazz) {
         List<PropertyDescriptor> descriptors = getWritableProperties(clazz);
 
         List<BeanPropertyDescription> properties = descriptors.stream()
@@ -80,7 +83,20 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
                 getPropertyName(descriptor, type),
                 createTypeInfo(descriptor),
                 descriptor.getReadMethod(),
-                descriptor.getWriteMethod());
+                descriptor.getWriteMethod(),
+                getComments(descriptor, type));
+    }
+
+    private List<String> getComments(@NotNull final PropertyDescriptor descriptor, @NotNull final Class<?> type) {
+        try {
+            final Field field = type.getDeclaredField(descriptor.getName());
+            if (!field.isAnnotationPresent(Comment.class)) return new ArrayList<>();
+            return Arrays.asList(field.getAnnotation(Comment.class).value());
+        } catch (final NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        return new ArrayList<>();
     }
 
     /**
@@ -186,7 +202,7 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
     protected Map<String, Integer> createFieldNameOrderMap(Class<?> clazz) {
         Map<String, Integer> nameByIndex = new HashMap<>();
         int i = 0;
-        for (Class currentClass : collectClassAndAllParents(clazz)) {
+        for (Class<?> currentClass : collectClassAndAllParents(clazz)) {
             for (Field field : currentClass.getDeclaredFields()) {
                 nameByIndex.put(field.getName(), i);
                 ++i;

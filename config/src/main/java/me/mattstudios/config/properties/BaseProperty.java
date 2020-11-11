@@ -6,6 +6,10 @@ import me.mattstudios.config.resource.PropertyReader;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base implementation of {@link Property}. All properties should extend from this class.
@@ -21,6 +25,8 @@ public abstract class BaseProperty<T> implements Property<T> {
     private String path = "";
     @NotNull
     private final T defaultValue;
+    @NotNull
+    private final Map<String, List<String>> comments = new LinkedHashMap<>();
 
     /**
      * Constructor.
@@ -73,7 +79,19 @@ public abstract class BaseProperty<T> implements Property<T> {
     protected abstract T getFromReader(PropertyReader reader, ConvertErrorRecorder errorRecorder);
 
     @Override
+    public void addComments(@NotNull final String path, @NotNull final List<String> comments) {
+        this.comments.put(path, comments);
+    }
+
+    @NotNull
+    @Override
+    public Map<String, List<String>> getComments() {
+        return Collections.unmodifiableMap(comments);
+    }
+
+    @Override
     public String toString() {
         return "Property '" + path + "'";
     }
+
 }

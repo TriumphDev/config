@@ -3,6 +3,7 @@ package me.mattstudios.config.configurationdata;
 import me.mattstudios.config.properties.Property;
 import me.mattstudios.config.properties.convertresult.PropertyValue;
 import me.mattstudios.config.resource.PropertyReader;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Map;
  *  <li>keeps all comments</li>
  *  <li>manages the values associated with the properties</li>
  * </ul>
- *
+ * <p>
  * Create instances with {@link ConfigurationDataBuilder}.
  */
 public interface ConfigurationData {
@@ -35,6 +36,13 @@ public interface ConfigurationData {
      * @return list of comments, never null
      */
     List<String> getCommentsForSection(String path);
+
+    /**
+     * Adds comments to specific path
+     *
+     * @param comments The comments
+     */
+    void addComments(@NotNull final Map<String, List<String>> comments);
 
     /**
      * Returns all comments registered to this configuration data. Typically for tests and
@@ -59,7 +67,7 @@ public interface ConfigurationData {
      * value) and throws an exception if the property is unknown.
      *
      * @param property the property to look up
-     * @param <T> property type
+     * @param <T>      property type
      * @return value associated with the property, or null if not present
      */
     <T> T getValue(Property<T> property);
@@ -69,8 +77,8 @@ public interface ConfigurationData {
      * if the value is not valid.
      *
      * @param property the property to change the value for
-     * @param value the value to set
-     * @param <T> the property type
+     * @param value    the value to set
+     * @param <T>      the property type
      */
     <T> void setValue(Property<T> property, T value);
 

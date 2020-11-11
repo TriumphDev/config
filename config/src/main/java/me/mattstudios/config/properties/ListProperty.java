@@ -23,10 +23,10 @@ public class ListProperty<T> extends BaseProperty<List<T>> {
     /**
      * Constructor.
      *
-     * @param type the property type
+     * @param type         the property type
      * @param defaultValue the default value of the property
      */
-    public ListProperty(@NotNull final  PropertyType<T> type, List<T> defaultValue) {
+    public ListProperty(@NotNull final PropertyType<T> type, List<T> defaultValue) {
         super(Collections.unmodifiableList(defaultValue));
         this.type = type;
     }
@@ -37,9 +37,10 @@ public class ListProperty<T> extends BaseProperty<List<T>> {
         final List<?> list = reader.getList(getPath());
 
         if (list != null) {
-            return list.stream()
-                    .map(elem -> type.convert(elem, errorRecorder))
-                    .filter(Objects::nonNull).collect(Collectors.toUnmodifiableList());
+            return Collections.unmodifiableList(list.stream()
+                                                        .map(elem -> type.convert(elem, errorRecorder, this))
+                                                        .filter(Objects::nonNull)
+                                                        .collect(Collectors.toList()));
         }
 
         return null;
@@ -48,7 +49,7 @@ public class ListProperty<T> extends BaseProperty<List<T>> {
     @Override
     public Object toExportValue(List<T> value) {
         return value.stream()
-            .map(type::toExportValue)
-            .collect(Collectors.toList());
+                .map(t -> type.toExportValue(t, this))
+                .collect(Collectors.toList());
     }
 }

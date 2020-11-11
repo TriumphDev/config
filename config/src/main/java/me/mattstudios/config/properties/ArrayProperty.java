@@ -35,7 +35,7 @@ public class ArrayProperty<T> extends BaseProperty<T[]> {
         if (object instanceof Collection<?>) {
             Collection<?> collection = (Collection<?>) object;
             return collection.stream()
-                    .map(elem -> type.convert(elem, errorRecorder))
+                    .map(elem -> type.convert(elem, errorRecorder, this))
                     .filter(Objects::nonNull)
                     .toArray(arrayProducer);
         }
@@ -47,7 +47,7 @@ public class ArrayProperty<T> extends BaseProperty<T[]> {
         Object[] array = new Object[value.length];
 
         for (int i = 0; i < array.length; i++) {
-            array[i] = this.type.toExportValue(value[i]);
+            array[i] = this.type.toExportValue(value[i], this);
         }
 
         return array;

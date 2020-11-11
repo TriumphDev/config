@@ -19,4 +19,5 @@ public final class DefaultMapper extends MapperImpl {
         }
         return instance;
     }
+
 }

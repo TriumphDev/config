@@ -1,7 +1,6 @@
 package me.mattstudios.config.demo.beans;
 
 import me.mattstudios.config.SettingsManager;
-import me.mattstudios.config.SettingsManagerBuilder;
 import me.mattstudios.config.TestUtils;
 
 import java.io.IOException;
@@ -30,7 +29,7 @@ public class BeanPropertiesDemo {
     }
 
     public String generateUserInfo() {
-        SettingsManager settingsManager = SettingsManagerBuilder.withYamlFile(configFile)
+        SettingsManager settingsManager = SettingsManager.from(configFile)
             .configurationData(DemoSettings.class).create();
         UserBase userBase = settingsManager.getProperty(DemoSettings.USER_BASE);
 

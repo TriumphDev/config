@@ -1,6 +1,8 @@
 package me.mattstudios.config.properties.types;
 
+import me.mattstudios.config.properties.Property;
 import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -56,12 +58,12 @@ public class PrimitivePropertyType<T> implements PropertyType<T> {
     }
 
     @Override
-    public T convert(Object object, ConvertErrorRecorder errorRecorder) {
+    public T convert(Object object, ConvertErrorRecorder errorRecorder,  @NotNull final Property<?> parentProperty) {
         return convertFunction.apply(object);
     }
 
     @Override
-    public Object toExportValue(T value) {
+    public Object toExportValue(T value, @NotNull final Property<?> parentProperty) {
         return exportValueFunction.apply(value);
     }
 

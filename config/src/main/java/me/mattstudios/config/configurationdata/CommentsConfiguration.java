@@ -48,6 +48,6 @@ public class CommentsConfiguration {
      * @return map with all comments
      */
     public Map<String, List<String>> getAllComments() {
-        return Collections.unmodifiableMap(comments);
+        return comments;
     }
 }

@@ -5,14 +5,17 @@ import me.mattstudios.config.beanmapper.leafvaluehandler.StandardLeafValueHandle
 import me.mattstudios.config.beanmapper.propertydescription.BeanDescriptionFactory;
 import me.mattstudios.config.beanmapper.propertydescription.BeanDescriptionFactoryImpl;
 import me.mattstudios.config.beanmapper.propertydescription.BeanPropertyDescription;
+import me.mattstudios.config.properties.Property;
 import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
 import me.mattstudios.config.utils.TypeInformation;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -49,23 +52,29 @@ import java.util.stream.Collectors;
  */
 public class MapperImpl implements Mapper {
 
-    /** Marker object to signal that null is meant to be used as value. */
+    /**
+     * Marker object to signal that null is meant to be used as value.
+     */
     public static final Object RETURN_NULL = new Object();
 
     // ---------
     // Fields and general configurable methods
     // ---------
 
-    private final BeanDescriptionFactory beanDescriptionFactory;
-    private final LeafValueHandler leafValueHandler;
+    private static BeanDescriptionFactory beanDescriptionFactory;
+    private static LeafValueHandler leafValueHandler;
+    /*@NotNull
+    private final Property<?> parentProperty;*/
 
     public MapperImpl() {
         this(new BeanDescriptionFactoryImpl(), StandardLeafValueHandlers.getDefaultLeafValueHandler());
     }
 
-    public MapperImpl(BeanDescriptionFactory beanDescriptionFactory, LeafValueHandler leafValueHandler) {
-        this.beanDescriptionFactory = beanDescriptionFactory;
-        this.leafValueHandler = leafValueHandler;
+    public MapperImpl(@NotNull final BeanDescriptionFactory beanDescriptionFactory, @NotNull final LeafValueHandler leafValueHandler) {
+        MapperImpl.beanDescriptionFactory = beanDescriptionFactory;
+        MapperImpl.leafValueHandler = leafValueHandler;
+
+        //this.parentProperty = parentProperty;
     }
 
     protected final BeanDescriptionFactory getBeanDescriptionFactory() {
@@ -86,7 +95,7 @@ public class MapperImpl implements Mapper {
     // ---------
 
     @Override
-    public Object toExportValue(Object value) {
+    public Object toExportValue(@Nullable final Object value, @NotNull final Property<?> parentProperty, @NotNull final String path) {
         // Step 1: attempt simple value transformation
         Object simpleValue = leafValueHandler.toExportValue(value);
         if (simpleValue != null || value == null) {
@@ -94,7 +103,7 @@ public class MapperImpl implements Mapper {
         }
 
         // Step 2: handle special cases like Collection
-        simpleValue = createExportValueForSpecialTypes(value);
+        simpleValue = createExportValueForSpecialTypes(value, parentProperty, path);
         if (simpleValue != null) {
             return unwrapReturnNull(simpleValue);
         }
@@ -102,7 +111,13 @@ public class MapperImpl implements Mapper {
         // Step 3: treat as bean
         Map<String, Object> mappedBean = new LinkedHashMap<>();
         for (BeanPropertyDescription property : beanDescriptionFactory.getAllProperties(value.getClass())) {
-            Object exportValueOfProperty = toExportValue(property.getValue(value));
+            final String currentPath = path + "." + property.getName();
+            final List<String> comments = property.getComments();
+            if (!comments.isEmpty()) {
+                parentProperty.addComments(currentPath, comments);
+            }
+
+            Object exportValueOfProperty = toExportValue(property.getValue(value), parentProperty, currentPath);
             if (exportValueOfProperty != null) {
                 mappedBean.put(property.getName(), exportValueOfProperty);
             }
@@ -119,24 +134,24 @@ public class MapperImpl implements Mapper {
      * @return the export value to use or {@link #RETURN_NULL}, or null if not applicable
      */
     @Nullable
-    protected Object createExportValueForSpecialTypes(Object value) {
+    protected Object createExportValueForSpecialTypes(final Object value, @NotNull final Property<?> parentProperty, @NotNull final String path) {
         if (value instanceof Collection<?>) {
             return ((Collection<?>) value).stream()
-                .map(this::toExportValue)
-                .collect(Collectors.toList());
+                    .map(obj -> toExportValue(obj, parentProperty, path))
+                    .collect(Collectors.toList());
         }
 
         if (value instanceof Map<?, ?>) {
             Map<Object, Object> result = new LinkedHashMap<>();
             for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-                result.put(entry.getKey(), toExportValue(entry.getValue()));
+                result.put(entry.getKey(), toExportValue(entry.getValue(), parentProperty, path + "." + entry.getKey()));
             }
             return result;
         }
 
         if (value instanceof Optional<?>) {
             Optional<?> optional = (Optional<?>) value;
-            return optional.map(this::toExportValue).orElse(RETURN_NULL);
+            return optional.map(obj -> toExportValue(obj, parentProperty, path)).orElse(RETURN_NULL);
         }
 
         return null;
@@ -152,23 +167,23 @@ public class MapperImpl implements Mapper {
 
     @Nullable
     @Override
-    public Object convertToBean(Object value, TypeInformation beanType, ConvertErrorRecorder errorRecorder) {
+    public Object convertToBean(Object value, TypeInformation beanType, ConvertErrorRecorder errorRecorder, @NotNull final Property<?> parentProperty) {
         if (value == null) {
             return null;
         }
 
-        return convertValueForType(createRootMappingContext(beanType, errorRecorder), value);
+        return convertValueForType(createRootMappingContext(beanType, errorRecorder), value, parentProperty);
     }
 
     /**
      * Main method for converting a value to another type.
      *
      * @param context the mapping context
-     * @param value the value to convert from
+     * @param value   the value to convert from
      * @return object whose type matches the one in the mapping context, or null if not applicable
      */
     @Nullable
-    protected Object convertValueForType(MappingContext context, Object value) {
+    protected Object convertValueForType(final MappingContext context, final Object value, @NotNull final Property<?> parentProperty) {
         Class<?> rawClass = context.getTypeInformation().getSafeToWriteClass();
         if (rawClass == null) {
             throw new ConfigMeMapperException(context, "Cannot determine required type");
@@ -181,31 +196,31 @@ public class MapperImpl implements Mapper {
         }
 
         // Step 2: check if we have a special type like List that is handled separately
-        result = handleSpecialTypes(context, value);
+        result = handleSpecialTypes(context, value, parentProperty);
         if (result != null) {
             return result;
         }
 
         // Step 3: last possibility - assume it's a bean and try to map values to its structure
-        return createBean(context, value);
+        return createBean(context, value, parentProperty, parentProperty.getPath());
     }
 
     /**
      * Handles special types in the bean mapping process which require special handling.
      *
      * @param context the mapping context
-     * @param value the value to convert from
+     * @param value   the value to convert from
      * @return object whose type matches the one in the mapping context, or null if not applicable
      */
     @Nullable
-    protected Object handleSpecialTypes(MappingContext context, Object value) {
+    protected Object handleSpecialTypes(MappingContext context, Object value, @NotNull final Property<?> parentProperty) {
         final Class<?> rawClass = context.getTypeInformation().getSafeToWriteClass();
         if (Collection.class.isAssignableFrom(rawClass)) {
-            return createCollection(context, value);
+            return createCollection(context, value, parentProperty);
         } else if (Map.class.isAssignableFrom(rawClass)) {
-            return createMap(context, value);
+            return createMap(context, value, parentProperty);
         } else if (Optional.class.isAssignableFrom(rawClass)) {
-            return createOptional(context, value);
+            return createOptional(context, value, parentProperty);
         }
         return null;
     }
@@ -216,19 +231,19 @@ public class MapperImpl implements Mapper {
      * Handles the creation of Collection properties.
      *
      * @param context the mapping context
-     * @param value the value to map from
+     * @param value   the value to map from
      * @return Collection property from the value, or null if not applicable
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    protected Collection createCollection(MappingContext context, Object value) {
+    protected Collection<?> createCollection(MappingContext context, Object value, @NotNull final Property<?> parentProperty) {
         if (value instanceof Iterable<?>) {
             TypeInformation entryType = context.getGenericTypeInfoOrFail(0);
-            Collection result = createCollectionMatchingType(context);
+            Collection<Object> result = createCollectionMatchingType(context);
 
             int index = 0;
-            for (Object entry : (Iterable) value) {
-                Object convertedEntry = convertValueForType(context.createChild("[" + index + "]", entryType), entry);
+            for (Object entry : (Iterable<Object>) value) {
+                Object convertedEntry = convertValueForType(context.createChild("[" + index + "]", entryType), entry, parentProperty);
                 if (convertedEntry == null) {
                     context.registerError("Cannot convert value at index " + index);
                 } else {
@@ -246,12 +261,12 @@ public class MapperImpl implements Mapper {
      * @param mappingContext the current mapping context with a collection type
      * @return Collection of matching type
      */
-    protected Collection createCollectionMatchingType(MappingContext mappingContext) {
+    protected Collection<Object> createCollectionMatchingType(MappingContext mappingContext) {
         Class<?> collectionType = mappingContext.getTypeInformation().getSafeToWriteClass();
         if (collectionType.isAssignableFrom(ArrayList.class)) {
-            return new ArrayList();
+            return new ArrayList<>();
         } else if (collectionType.isAssignableFrom(LinkedHashSet.class)) {
-            return new LinkedHashSet();
+            return new LinkedHashSet<>();
         } else {
             throw new ConfigMeMapperException(mappingContext, "Unsupported collection type '" + collectionType + "'");
         }
@@ -263,12 +278,12 @@ public class MapperImpl implements Mapper {
      * Handles the creation of a Map property.
      *
      * @param context mapping context
-     * @param value value to map from
+     * @param value   value to map from
      * @return Map property, or null if not applicable
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    protected Map createMap(MappingContext context, Object value) {
+    protected Map<?, ?> createMap(MappingContext context, Object value, @NotNull final Property<?> parentProperty) {
         if (value instanceof Map<?, ?>) {
             if (context.getGenericTypeInfoOrFail(0).getSafeToWriteClass() != String.class) {
                 throw new ConfigMeMapperException(context, "The key type of maps may only be of String type");
@@ -276,10 +291,10 @@ public class MapperImpl implements Mapper {
             TypeInformation mapValueType = context.getGenericTypeInfoOrFail(1);
 
             Map<String, ?> entries = (Map<String, ?>) value;
-            Map result = createMapMatchingType(context);
+            Map<String, Object> result = createMapMatchingType(context);
             for (Map.Entry<String, ?> entry : entries.entrySet()) {
                 Object mappedValue = convertValueForType(
-                    context.createChild("[k=" + entry.getKey() + "]", mapValueType), entry.getValue());
+                        context.createChild("[k=" + entry.getKey() + "]", mapValueType), entry.getValue(), parentProperty);
                 if (mappedValue == null) {
                     context.registerError("Cannot map value for key " + entry.getKey());
                 } else {
@@ -297,12 +312,12 @@ public class MapperImpl implements Mapper {
      * @param mappingContext the current mapping context with a map type
      * @return Map of matching type
      */
-    protected Map createMapMatchingType(MappingContext mappingContext) {
+    protected Map<String, Object> createMapMatchingType(MappingContext mappingContext) {
         Class<?> mapType = mappingContext.getTypeInformation().getSafeToWriteClass();
         if (mapType.isAssignableFrom(LinkedHashMap.class)) {
-            return new LinkedHashMap();
+            return new LinkedHashMap<>();
         } else if (mapType.isAssignableFrom(TreeMap.class)) {
-            return new TreeMap();
+            return new TreeMap<>();
         } else {
             throw new ConfigMeMapperException(mappingContext, "Unsupported map type '" + mapType + "'");
         }
@@ -310,9 +325,9 @@ public class MapperImpl implements Mapper {
 
     // -- Optional
 
-    protected Object createOptional(MappingContext context, Object value) {
+    protected Object createOptional(MappingContext context, Object value, @NotNull final Property<?> parentProperty) {
         MappingContext childContext = context.createChild("[v]", context.getGenericTypeInfoOrFail(0));
-        Object result = convertValueForType(childContext, value);
+        Object result = convertValueForType(childContext, value, parentProperty);
         return Optional.ofNullable(result);
     }
 
@@ -322,18 +337,20 @@ public class MapperImpl implements Mapper {
      * Converts the provided value to the requested JavaBeans class if possible.
      *
      * @param context mapping context (incl. desired type)
-     * @param value the value from the property resource
+     * @param value   the value from the property resource
      * @return the converted value, or null if not possible
      */
     @Nullable
-    protected Object createBean(MappingContext context, Object value) {
+    protected Object createBean(final MappingContext context, final Object value, @NotNull final Property<?> parentProperty, @NotNull final String path) {
+        //System.out.println(value);
+        //System.out.println(context);
         // Ensure that the value is a map so we can map it to a bean
         if (!(value instanceof Map<?, ?>)) {
             return null;
         }
 
         Collection<BeanPropertyDescription> properties = beanDescriptionFactory.getAllProperties(
-            context.getTypeInformation().getSafeToWriteClass());
+                context.getTypeInformation().getSafeToWriteClass());
         // Check that we have properties (or else we don't have a bean)
         if (properties.isEmpty()) {
             return null;
@@ -343,8 +360,8 @@ public class MapperImpl implements Mapper {
         Object bean = createBeanMatchingType(context);
         for (BeanPropertyDescription property : properties) {
             Object result = convertValueForType(
-                context.createChild(property.getName(), property.getTypeInformation()),
-                entries.get(property.getName()));
+                    context.createChild(property.getName(), property.getTypeInformation()),
+                    entries.get(property.getName()), parentProperty);
             if (result == null) {
                 if (property.getValue(bean) == null) {
                     return null; // We do not support beans with a null value
@@ -370,7 +387,7 @@ public class MapperImpl implements Mapper {
             return clazz.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
             throw new ConfigMeMapperException(mappingContext, "Could not create object of type '"
-                + clazz.getName() + "'. It is required to have a default constructor", e);
+                    + clazz.getName() + "'. It is required to have a default constructor", e);
         }
     }
 }

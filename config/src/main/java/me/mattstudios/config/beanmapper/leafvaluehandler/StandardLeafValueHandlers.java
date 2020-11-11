@@ -27,18 +27,20 @@ public final class StandardLeafValueHandlers {
     public static LeafValueHandler getDefaultLeafValueHandler() {
         if (defaultHandler == null) {
             defaultHandler = new CombiningLeafValueHandler(new StringHandler(), new EnumHandler(),
-                new BooleanHandler(), new ObjectHandler(), new NumberHandler());
+                                                           new BooleanHandler(), new ObjectHandler(), new NumberHandler());
         }
         return defaultHandler;
     }
 
-    /** String handler. */
+    /**
+     * String handler.
+     */
     public static class StringHandler extends AbstractLeafValueHandler {
 
         @Override
         public Object convert(Class<?> clazz, Object value) {
             if (clazz == String.class
-                && (value instanceof String || value instanceof Number || value instanceof Boolean)) {
+                    && (value instanceof String || value instanceof Number || value instanceof Boolean)) {
                 return value.toString();
             }
             return null;
@@ -50,7 +52,9 @@ public final class StandardLeafValueHandlers {
         }
     }
 
-    /** Enum handler. */
+    /**
+     * Enum handler.
+     */
     public static class EnumHandler extends AbstractLeafValueHandler {
 
         @Override
@@ -75,7 +79,9 @@ public final class StandardLeafValueHandlers {
         }
     }
 
-    /** Boolean handler. */
+    /**
+     * Boolean handler.
+     */
     public static class BooleanHandler extends AbstractLeafValueHandler {
 
         @Override
@@ -92,7 +98,9 @@ public final class StandardLeafValueHandlers {
         }
     }
 
-    /** Object handler. */
+    /**
+     * Object handler.
+     */
     public static class ObjectHandler extends AbstractLeafValueHandler {
 
         @Override
@@ -109,7 +117,9 @@ public final class StandardLeafValueHandlers {
         }
     }
 
-    /** Number handler. */
+    /**
+     * Number handler.
+     */
     public static class NumberHandler extends AbstractLeafValueHandler {
 
         private static final Map<Class<?>, Class<?>> PRIMITIVE_NUMBERS_MAP = buildPrimitiveNumberMap();

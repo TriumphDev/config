@@ -52,7 +52,7 @@ public class YamlFileResourceOptions {
     public static class Builder {
         private Charset charset;
         private ToIntFunction<PathElement> numberOfLinesBeforeFunction;
-        private int indentationSize = 4;
+        private int indentationSize = 2;
 
         public Builder charset(Charset charset) {
             this.charset = charset;

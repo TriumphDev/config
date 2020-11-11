@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -93,6 +94,11 @@ public interface Property<T> {
      */
     @Nullable
     Object toExportValue(T value);
+
+    void addComments(@NotNull final String path, @NotNull final List<String> comments);
+
+    @NotNull
+    Map<String, List<String>> getComments();
 
     /**
      * Creates a new boolean property.

@@ -87,7 +87,6 @@ public interface SettingsManager {
     @NotNull
     static SettingsManagerBuilder from(@NotNull final Path path, @NotNull final YamlFileResourceOptions resourceOptions) {
         Utils.createFileIfNotExists(path);
-        System.out.println(path);
         return new SettingsManagerBuilder(new YamlFileResource(path, resourceOptions));
     }
 

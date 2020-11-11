@@ -30,12 +30,13 @@ public class TypeBasedProperty<T> extends BaseProperty<T> {
     @Nullable
     @Override
     protected T getFromReader(PropertyReader reader, ConvertErrorRecorder errorRecorder) {
-        return type.convert(reader.getObject(getPath()), errorRecorder);
+        System.out.println(getPath());
+        return type.convert(reader.getObject(getPath()), errorRecorder, this);
     }
 
     @Nullable
     @Override
     public Object toExportValue(T value) {
-        return type.toExportValue(value);
+        return type.toExportValue(value, this);
     }
 }

@@ -21,14 +21,6 @@ fun main() {
             .configurationData(Settings::class.java)
             .create()
 
-    println(config.getProperty(Settings.FIRST))
-    println(config.getProperty(Settings.SECOND))
-    println(config.getProperty(Settings.THIRD))
-    println(config.getProperty(Settings.FORTH))
-    // println(config.getProperty(Settings.FIFTH))
-    val test = config.getProperty(Settings.SIXTH2)
-    println(test)
-    //println(config.getProperty(Settings.SEVENTH))
     println(config.getProperty(Settings.EIGHTH))
 
     //println(gson.toJson(Test()))
@@ -75,15 +67,18 @@ object Settings : SettingsHolder {
 }
 
 data class Test(
+        @Comment("This is a comment to parent class")
         var name: String = "Matt",
-        @Name("not-map")
-        var map: Map<String, Child> = mapOf("first" to Child("Jeu", listOf("Hello", "there")), "second" to Child("heu"))
-        //var child: Child = Child("Shit")
+        var map: Map<String, Child> = mapOf("first" to Child("Jeu", listOf("Hello", "there")), "second" to Child("heu")),
+        @Name("not-child")
+        var child: Child = Child("Shit")
 )
 
 data class Child(
+        @Comment("This is a comment to child class")
         var name: String = "Child test",
-        var list: List<String> = listOf(),
+        @Name("fuck")
+        var list: List<String> = listOf("Hello"),
         var number: Int = 10
 )
 

@@ -36,7 +36,7 @@ class BeanDescriptionFactoryImplTest {
         BeanDescriptionFactory factory = new BeanDescriptionFactoryImpl();
 
         // when
-        Collection<BeanPropertyDescription> descriptions = factory.getAllProperties(SampleBean.class);
+        Collection<BeanPropertyDescription> descriptions = factory.getAllProperties(SampleBean.class, parentProperty);
 
         // then
         assertThat(descriptions, hasSize(2));
@@ -50,7 +50,7 @@ class BeanDescriptionFactoryImplTest {
         BeanDescriptionFactory factory = new BeanDescriptionFactoryImpl();
 
         // when / then
-        assertThat(factory.getAllProperties(List.class), empty());
+        assertThat(factory.getAllProperties(List.class, parentProperty), empty());
     }
 
     @Test
@@ -59,7 +59,7 @@ class BeanDescriptionFactoryImplTest {
         BeanDescriptionFactory factory = new BeanDescriptionFactoryImpl();
 
         // when
-        List<BeanPropertyDescription> properties = new ArrayList<>(factory.getAllProperties(BooleanTestBean.class));
+        List<BeanPropertyDescription> properties = new ArrayList<>(factory.getAllProperties(BooleanTestBean.class, parentProperty));
 
         // then
         assertThat(properties, hasSize(4));
@@ -77,7 +77,7 @@ class BeanDescriptionFactoryImplTest {
         BeanDescriptionFactory factory = new BeanDescriptionFactoryImpl();
 
         // when
-        Collection<BeanPropertyDescription> properties = factory.getAllProperties(BeanWithTransientFields.class);
+        Collection<BeanPropertyDescription> properties = factory.getAllProperties(BeanWithTransientFields.class, parentProperty);
 
         // then
         assertThat(properties, hasSize(2));
@@ -90,7 +90,7 @@ class BeanDescriptionFactoryImplTest {
         BeanDescriptionFactory factory = new BeanDescriptionFactoryImpl();
 
         // when
-        Collection<BeanPropertyDescription> properties = factory.getAllProperties(Middle.class);
+        Collection<BeanPropertyDescription> properties = factory.getAllProperties(Middle.class, parentProperty);
 
         // then
         assertThat(properties, hasSize(3));
@@ -103,7 +103,7 @@ class BeanDescriptionFactoryImplTest {
         BeanDescriptionFactory factory = new BeanDescriptionFactoryImpl();
 
         // when
-        Collection<BeanPropertyDescription> properties = factory.getAllProperties(Child.class);
+        Collection<BeanPropertyDescription> properties = factory.getAllProperties(Child.class, parentProperty);
 
         // then
         assertThat(properties, hasSize(5));
@@ -117,7 +117,7 @@ class BeanDescriptionFactoryImplTest {
         BeanDescriptionFactory factory = new BeanDescriptionFactoryImpl();
 
         // when
-        Collection<BeanPropertyDescription> properties = factory.getAllProperties(AnnotatedEntry.class);
+        Collection<BeanPropertyDescription> properties = factory.getAllProperties(AnnotatedEntry.class, parentProperty);
 
         // then
         assertThat(properties, hasSize(2));
@@ -132,7 +132,7 @@ class BeanDescriptionFactoryImplTest {
 
         // when / then
         TestUtils.verifyException(
-            () -> factory.getAllProperties(BeanWithNameClash.class),
+            () -> factory.getAllProperties(BeanWithNameClash.class, parentProperty),
             ConfigMeMapperException.class,
             "multiple properties with name 'threshold'");
     }
@@ -144,7 +144,7 @@ class BeanDescriptionFactoryImplTest {
 
         // when / then
         TestUtils.verifyException(
-            () -> factory.getAllProperties(BeanWithEmptyName.class),
+            () -> factory.getAllProperties(BeanWithEmptyName.class, parentProperty),
             ConfigMeMapperException.class,
             "may not be empty");
     }

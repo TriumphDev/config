@@ -14,8 +14,9 @@ public interface BeanDescriptionFactory {
      * given type. This is usually all properties which can be read from and written to.
      *
      * @param clazz the class whose properties should be returned
+     * @param parentProperty
      * @return the relevant properties on the class
      */
-    Collection<BeanPropertyDescription> getAllProperties(Class<?> clazz);
+    Collection<BeanPropertyDescription> getAllProperties(final Class<?> clazz);
 
 }

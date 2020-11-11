@@ -1,9 +1,11 @@
 package me.mattstudios.config.beanmapper.propertydescription;
 
-import me.mattstudios.config.utils.TypeInformation;
 import me.mattstudios.config.beanmapper.MapperImpl;
+import me.mattstudios.config.utils.TypeInformation;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Represents a property within a bean class, as used in {@link MapperImpl}.
@@ -27,7 +29,7 @@ public interface BeanPropertyDescription {
      * Sets the given value on the provided bean for this property. The value should correspond
      * to the {@link #getTypeInformation() property type}.
      *
-     * @param bean the bean to set the property on
+     * @param bean  the bean to set the property on
      * @param value the value to set
      */
     void setValue(Object bean, Object value);
@@ -40,4 +42,8 @@ public interface BeanPropertyDescription {
      */
     @Nullable
     Object getValue(Object bean);
+
+    @NotNull
+    List<String> getComments();
+
 }

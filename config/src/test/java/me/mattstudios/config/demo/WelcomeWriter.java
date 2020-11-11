@@ -1,7 +1,6 @@
 package me.mattstudios.config.demo;
 
 import me.mattstudios.config.SettingsManager;
-import me.mattstudios.config.SettingsManagerBuilder;
 import me.mattstudios.config.TestUtils;
 
 import java.io.IOException;
@@ -58,7 +57,7 @@ public class WelcomeWriter {
     private SettingsManager initSettings() {
         // Copy the demo/config.yml instead of using it directly so it doesn't get overridden
         configFile = copyFileFromJar("/demo/config.yml");
-        return SettingsManagerBuilder.withYamlFile(configFile).configurationData(TitleConfig.class).create();
+        return SettingsManager.from(configFile).configurationData(TitleConfig.class).create();
     }
 
     /**

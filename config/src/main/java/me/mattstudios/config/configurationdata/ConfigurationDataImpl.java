@@ -5,6 +5,7 @@ import me.mattstudios.config.exception.ConfigMeException;
 import me.mattstudios.config.properties.Property;
 import me.mattstudios.config.properties.convertresult.PropertyValue;
 import me.mattstudios.config.resource.PropertyReader;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class ConfigurationDataImpl implements ConfigurationData {
      */
     protected ConfigurationDataImpl(List<? extends Property<?>> allProperties, Map<String, List<String>> allComments) {
         this.properties = Collections.unmodifiableList(allProperties);
-        this.allComments = Collections.unmodifiableMap(allComments);
+        this.allComments = allComments;
         this.values = new HashMap<>();
     }
 
@@ -46,8 +47,13 @@ public class ConfigurationDataImpl implements ConfigurationData {
     }
 
     @Override
+    public void addComments(@NotNull final Map<String, List<String>> comments) {
+        allComments.putAll(comments);
+    }
+
+    @Override
     public Map<String, List<String>> getAllComments() {
-        return allComments;
+        return Collections.unmodifiableMap(allComments);
     }
 
     @Override

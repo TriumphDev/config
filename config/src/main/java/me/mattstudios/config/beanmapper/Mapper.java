@@ -1,8 +1,10 @@
 package me.mattstudios.config.beanmapper;
 
+import me.mattstudios.config.properties.BeanProperty;
+import me.mattstudios.config.properties.Property;
 import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
 import me.mattstudios.config.utils.TypeInformation;
-import me.mattstudios.config.properties.BeanProperty;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -17,28 +19,28 @@ public interface Mapper {
      * conversion is not possible. The value usually stems from a property resource and
      * is a Map of values.
      *
-     * @param value the value to convert (typically a Map)
+     * @param value           the value to convert (typically a Map)
      * @param typeInformation the required type
-     * @param errorRecorder error recorder to register errors even if a valid value is returned
+     * @param errorRecorder   error recorder to register errors even if a valid value is returned
      * @return object of the given type, or null if not possible
      */
     @Nullable
-    Object convertToBean(@Nullable Object value, TypeInformation typeInformation, ConvertErrorRecorder errorRecorder);
+    Object convertToBean(@Nullable Object value, TypeInformation typeInformation, ConvertErrorRecorder errorRecorder, @NotNull final Property<?> parentProperty);
 
     /**
      * Converts the given value to an object of the given class, if possible. Returns null otherwise.
      * This is a convenience method as typed alternative to
-     * {@link #convertToBean(Object, TypeInformation, ConvertErrorRecorder)}.
+     * {@link #convertToBean(Object, TypeInformation, ConvertErrorRecorder, Property)}.
      *
-     * @param value the value to convert (typically a Map)
-     * @param clazz the required class
+     * @param value         the value to convert (typically a Map)
+     * @param clazz         the required class
      * @param errorRecorder error recorder to register errors even if a valid value is returned
-     * @param <T> the class type
+     * @param <T>           the class type
      * @return object of the given type, or null if not possible
      */
-    @SuppressWarnings("unchecked")
-    default <T> T convertToBean(@Nullable Object value, Class<T> clazz, ConvertErrorRecorder errorRecorder) {
-        return (T) convertToBean(value, new TypeInformation(clazz), errorRecorder);
+    default <T> T convertToBean(@Nullable Object value, Class<T> clazz, ConvertErrorRecorder errorRecorder, @NotNull final Property<?> parentProperty) {
+        //noinspection unchecked
+        return (T) convertToBean(value, new TypeInformation(clazz), errorRecorder, parentProperty);
     }
 
     /**
@@ -46,10 +48,10 @@ public interface Mapper {
      * typically returns a Map of values, or simple types like String / Number for scalar values.
      * Used in the {@link BeanProperty#toExportValue} method.
      *
-     * @param object the object to convert to its export value
+     * @param value the object to convert to its export value
      * @return export value to use
      */
     @Nullable
-    Object toExportValue(@Nullable Object object);
+    Object toExportValue(@NotNull final Object value, @NotNull final Property<?> parentProperty, @NotNull final String path);
 
 }

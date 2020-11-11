@@ -38,7 +38,6 @@ public final class Utils {
      */
     public static void createFileIfNotExists(@NotNull final Path file) {
         if (Files.exists(file)) {
-            System.out.println("huh?");
             if (!Files.isRegularFile(file)) {
                 throw new ConfigMeException("Expected file but '" + file + "' is not a file");
             }

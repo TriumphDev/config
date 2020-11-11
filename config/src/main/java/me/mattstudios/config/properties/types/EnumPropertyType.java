@@ -1,6 +1,8 @@
 package me.mattstudios.config.properties.types;
 
+import me.mattstudios.config.properties.Property;
 import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
+import org.jetbrains.annotations.NotNull;
 
 public class EnumPropertyType<E extends Enum<E>> implements PropertyType<E> {
 
@@ -15,7 +17,7 @@ public class EnumPropertyType<E extends Enum<E>> implements PropertyType<E> {
     }
 
     @Override
-    public E convert(Object object, ConvertErrorRecorder errorRecorder) {
+    public E convert(Object object, ConvertErrorRecorder errorRecorder, @NotNull final Property<?> parentProperty) {
         // If object is enum, then return this object, casting to E
         if (enumType.isInstance(object)) {
             return (E) object;
@@ -37,7 +39,8 @@ public class EnumPropertyType<E extends Enum<E>> implements PropertyType<E> {
     }
 
     @Override
-    public Object toExportValue(E value) {
+    public Object toExportValue(final E value, @NotNull final Property<?> parentProperty) {
         return value.name();
     }
+
 }
