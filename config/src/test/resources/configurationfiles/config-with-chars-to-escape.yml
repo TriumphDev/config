@@ -1,7 +1,0 @@
-shape:
-  - $
-  - $
-  - '!'
-ingredients:
-  '!': STICK
-  $: EMERALD

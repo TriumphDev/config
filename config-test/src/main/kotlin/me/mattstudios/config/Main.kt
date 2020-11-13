@@ -19,6 +19,7 @@ fun main() {
     val config = SettingsManager
             .from(File("testing-files", "config.yml"))
             .configurationData(Settings::class.java)
+            .propertyMapper(CustomMapper())
             .create()
 
     println(config.getProperty(Settings.EIGHTH))
@@ -55,7 +56,7 @@ object Settings : SettingsHolder {
     val SIXTH = Property.create(listOf(1, 2))*/
 
     @Path("list2")
-    val SIXTH2 = Property.create(listOf("Hello", "Mate"))
+    val SIXTH2 = Property.create(setOf("Hello", "Mate"))
 
     /*@Comment("Added an empty line above")
     @Path("nested.enum")
@@ -69,20 +70,28 @@ object Settings : SettingsHolder {
 data class Test(
         @Comment("This is a comment to parent class")
         var name: String = "Matt",
-        var map: Map<String, Child> = mapOf("first" to Child("Jeu", listOf("Hello", "there")), "second" to Child("heu")),
+        var map: Map<String, Some> = mapOf("first" to Child("Hey", listOf(1, 3)), "second" to Child("Hey2")),
         @Name("not-child")
-        var child: Child = Child("Shit")
+        var child: Some = Child()
 )
 
 data class Child(
         @Comment("This is a comment to child class")
-        var name: String = "Child test",
-        @Name("fuck")
-        var list: List<String> = listOf("Hello"),
-        var number: Int = 10
-)
+        var name: String = "Not matt",
+        var list: List<Int> = listOf(1, 2),
+        var enu: TestEnum = TestEnum.VALUE2
+) : Some
 
-public enum class TestEnum {
+data class Matt(
+        @Comment("This is a comment to child class")
+        var name: String = "Matt",
+        var list: List<Int> = listOf(1, 2),
+        var enu: TestEnum = TestEnum.VALUE2
+) : Some
+
+interface Some
+
+enum class TestEnum {
 
     VALUE1,
     VALUE2,

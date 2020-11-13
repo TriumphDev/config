@@ -4,10 +4,11 @@ import me.mattstudios.config.configurationdata.ConfigurationData;
 import me.mattstudios.config.exception.ConfigMeException;
 import me.mattstudios.config.properties.Property;
 import me.mattstudios.config.resource.PropertyPathTraverser.PathElement;
+import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -56,18 +57,17 @@ public class YamlFileResource implements PropertyResource {
 
     @Override
     public void exportProperties(ConfigurationData configurationData) {
-        System.out.println("exporting");
         try (OutputStream os = Files.newOutputStream(path);
              OutputStreamWriter writer = new OutputStreamWriter(os, options.getCharset())) {
             PropertyPathTraverser pathTraverser = new PropertyPathTraverser(configurationData);
             for (Property<?> property : configurationData.getProperties()) {
                 final Object exportValue = getExportValue(property, configurationData);
+
                 final Map<String, List<String>> comments = property.getComments();
-                System.out.println(comments.isEmpty());
                 if (!comments.isEmpty()) {
-                    System.out.println("adding comments?");
                     configurationData.addComments(comments);
                 }
+
                 exportValue(writer, pathTraverser, property.getPath(), exportValue);
             }
             writer.append("\n");
@@ -98,15 +98,13 @@ public class YamlFileResource implements PropertyResource {
      * @param value         the value to export
      * @throws IOException .
      */
-    protected void exportValue(Writer writer, PropertyPathTraverser pathTraverser,
-            String path, Object value) throws IOException {
+    protected void exportValue(Writer writer, PropertyPathTraverser pathTraverser, String path, Object value) throws IOException {
         if (value == null) {
             return;
         }
 
         if (value instanceof Map<?, ?> && !((Map<?, ?>) value).isEmpty()) {
             final String pathPrefix = path.isEmpty() ? "" : path + ".";
-
             for (Map.Entry<String, ?> entry : ((Map<String, ?>) value).entrySet()) {
                 exportValue(writer, pathTraverser, pathPrefix + entry.getKey(), entry.getValue());
             }
@@ -189,16 +187,32 @@ public class YamlFileResource implements PropertyResource {
      */
     protected String toYaml(@Nullable Object value) {
         if (value instanceof String) {
-            return getYamlObject().dump(value);
+            return '"' + value.toString() + '"';
         } else if (value instanceof Collection<?>) {
             List<?> list = collectionToList((Collection<?>) value);
-            return list.isEmpty() ? "[]" : "\n" + getYamlObject().dump(list);
+            if (list.isEmpty()) return "[]";
+            if (list.get(0) instanceof String) return toYamlStringList(list);
+            return "\n" + getYamlObject().dump(list);
         } else if (value instanceof Object[]) {
             Object[] array = (Object[]) value;
-
             return array.length == 0 ? "[]" : "\n" + getYamlObject().dump(array);
         }
         return getYamlObject().dump(value);
+    }
+
+    /**
+     * Returns a list of strings with `"` wrapped around it
+     *
+     * @param list The list to transform
+     * @return The transformed list
+     */
+    private String toYamlStringList(@NotNull final List<?> list) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append('\n');
+        for (final Object obj : list) {
+            builder.append("- \"").append(obj.toString()).append('"').append('\n');
+        }
+        return builder.toString();
     }
 
     /**
@@ -240,7 +254,9 @@ public class YamlFileResource implements PropertyResource {
 
     protected Yaml createNewYaml() {
         DumperOptions options = new DumperOptions();
+
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setPrettyFlow(true);
         options.setAllowUnicode(true);
         return new Yaml(options);
     }

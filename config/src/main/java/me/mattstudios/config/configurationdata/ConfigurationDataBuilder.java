@@ -8,7 +8,7 @@ import me.mattstudios.config.properties.BaseProperty;
 import me.mattstudios.config.properties.OptionalProperty;
 import me.mattstudios.config.properties.Property;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

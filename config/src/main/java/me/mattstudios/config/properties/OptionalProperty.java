@@ -1,5 +1,6 @@
 package me.mattstudios.config.properties;
 
+import me.mattstudios.config.beanmapper.PropertyMapperData;
 import me.mattstudios.config.properties.convertresult.PropertyValue;
 import me.mattstudios.config.resource.PropertyReader;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,8 @@ public class OptionalProperty<T> implements Property<Optional<T>> {
     private final Optional<T> defaultValue;
     @NotNull
     private final Map<String, List<String>> comments = new LinkedHashMap<>();
+    @NotNull
+    private PropertyMapperData propertyMapper;
 
     public OptionalProperty(Property<T> baseProperty, T defaultValue) {
         this.baseProperty = baseProperty;
@@ -42,15 +45,15 @@ public class OptionalProperty<T> implements Property<Optional<T>> {
     public PropertyValue<Optional<T>> determineValue(PropertyReader reader) {
         PropertyValue<T> basePropertyValue = baseProperty.determineValue(reader);
         Optional<T> value = basePropertyValue.isValidInResource()
-            ? Optional.ofNullable(basePropertyValue.getValue())
-            : Optional.empty();
+                ? Optional.ofNullable(basePropertyValue.getValue())
+                : Optional.empty();
 
         // Propagate the false "valid" property if the reader has a value at the base property's path
         // and the base property says it's invalid -> triggers a rewrite to get rid of the invalid value.
         boolean isWrongInResource = !basePropertyValue.isValidInResource() && reader.contains(baseProperty.getPath());
         return isWrongInResource
-            ? PropertyValue.withValueRequiringRewrite(value)
-            : PropertyValue.withValidValue(value);
+                ? PropertyValue.withValueRequiringRewrite(value)
+                : PropertyValue.withValidValue(value);
     }
 
     @Override
@@ -69,6 +72,17 @@ public class OptionalProperty<T> implements Property<Optional<T>> {
     @Override
     public void addComments(@NotNull final String path, @NotNull final List<String> comments) {
         this.comments.put(path, comments);
+    }
+
+    public void setPropertyMapper(@NotNull final PropertyMapperData propertyMapper) {
+        this.propertyMapper = propertyMapper;
+        ((BaseProperty<?>) baseProperty).setPropertyMapper(propertyMapper);
+    }
+
+    @NotNull
+    @Override
+    public PropertyMapperData getPropertyMapper() {
+        return propertyMapper;
     }
 
     @NotNull

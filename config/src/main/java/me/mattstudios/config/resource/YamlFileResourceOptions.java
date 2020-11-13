@@ -2,7 +2,7 @@ package me.mattstudios.config.resource;
 
 import me.mattstudios.config.resource.PropertyPathTraverser.PathElement;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.function.ToIntFunction;

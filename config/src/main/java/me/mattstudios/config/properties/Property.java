@@ -1,5 +1,6 @@
 package me.mattstudios.config.properties;
 
+import me.mattstudios.config.beanmapper.PropertyMapperData;
 import me.mattstudios.config.configurationdata.ConfigurationDataImpl;
 import me.mattstudios.config.migration.MigrationService;
 import me.mattstudios.config.properties.convertresult.PropertyValue;
@@ -9,8 +10,7 @@ import me.mattstudios.config.resource.PropertyReader;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -100,6 +100,9 @@ public interface Property<T> {
     @NotNull
     Map<String, List<String>> getComments();
 
+    @NotNull
+    PropertyMapperData getPropertyMapper();
+
     /**
      * Creates a new boolean property.
      *
@@ -175,25 +178,15 @@ public interface Property<T> {
     }
 
     /**
-     * Creates a new String set property where all values are lowercase.
+     * Creates a new String Set property.
      *
-     * @param path          the property's path
-     * @param defaultValues the items in the default set
-     * @return the created set property
+     * @param defaultValue the items in the default list
+     * @return the created list property
      */
-    public static Property<Set<String>> newLowercaseStringSetProperty(String path, String... defaultValues) {
-        return new LowercaseStringSetProperty(path, defaultValues);
-    }
-
-    /**
-     * Creates a new String set property where all values are lowercase.
-     *
-     * @param path          the property's path
-     * @param defaultValues the default value of the property
-     * @return the created set property
-     */
-    public static Property<Set<String>> newLowercaseStringSetProperty(String path, Collection<String> defaultValues) {
-        return new LowercaseStringSetProperty(path, defaultValues);
+    @NotNull
+    @Contract("_ -> new")
+    static Property<Set<String>> create(@NotNull final Set<String> defaultValue) {
+        return new SetProperty<>(PrimitivePropertyType.STRING, defaultValue);
     }
 
     /**

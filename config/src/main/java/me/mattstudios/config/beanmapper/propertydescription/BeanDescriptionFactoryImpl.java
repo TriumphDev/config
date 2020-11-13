@@ -5,8 +5,8 @@ import me.mattstudios.config.annotations.Name;
 import me.mattstudios.config.beanmapper.ConfigMeMapperException;
 import me.mattstudios.config.utils.TypeInformation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -40,8 +40,7 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
     /**
      * Returns all properties of the given bean class for which there exists a getter and setter.
      *
-     * @param clazz          the bean property to process
-     * @param parentProperty
+     * @param clazz the bean property to process
      * @return the bean class' properties to handle
      */
     @Override

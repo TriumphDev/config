@@ -1,11 +1,12 @@
 package me.mattstudios.config.properties;
 
+import me.mattstudios.config.beanmapper.PropertyMapperData;
 import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
 import me.mattstudios.config.properties.convertresult.PropertyValue;
 import me.mattstudios.config.resource.PropertyReader;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,6 +28,8 @@ public abstract class BaseProperty<T> implements Property<T> {
     private final T defaultValue;
     @NotNull
     private final Map<String, List<String>> comments = new LinkedHashMap<>();
+    @NotNull
+    private PropertyMapperData propertyMapper;
 
     /**
      * Constructor.
@@ -87,6 +90,16 @@ public abstract class BaseProperty<T> implements Property<T> {
     @Override
     public Map<String, List<String>> getComments() {
         return Collections.unmodifiableMap(comments);
+    }
+
+    public void setPropertyMapper(@NotNull final PropertyMapperData propertyMapper) {
+        this.propertyMapper = propertyMapper;
+    }
+
+    @NotNull
+    @Override
+    public PropertyMapperData getPropertyMapper() {
+        return propertyMapper;
     }
 
     @Override

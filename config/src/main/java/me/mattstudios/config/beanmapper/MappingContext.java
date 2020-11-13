@@ -31,11 +31,11 @@ public interface MappingContext {
      */
     default TypeInformation getGenericTypeInfoOrFail(int index) {
         TypeInformation genericType = getTypeInformation().getGenericType(index);
-        if (genericType == null || genericType.getSafeToWriteClass() == null) {
+        if (genericType == null) {
             throw new ConfigMeMapperException(this,
                 "The generic type " + index + " is not well defined");
         }
-        return getTypeInformation().getGenericType(index);
+        return genericType;
     }
 
     /**

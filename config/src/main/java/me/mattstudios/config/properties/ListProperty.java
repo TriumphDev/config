@@ -5,7 +5,7 @@ import me.mattstudios.config.properties.types.PropertyType;
 import me.mattstudios.config.resource.PropertyReader;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

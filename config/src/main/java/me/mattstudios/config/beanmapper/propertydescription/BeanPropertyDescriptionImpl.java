@@ -4,7 +4,8 @@ import me.mattstudios.config.beanmapper.ConfigMeMapperException;
 import me.mattstudios.config.utils.TypeInformation;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;

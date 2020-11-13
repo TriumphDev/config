@@ -6,7 +6,7 @@ import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
 import me.mattstudios.config.utils.TypeInformation;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Creates JavaBeans based on the values coming from a property reader. See the JavaDoc on the default implementation,

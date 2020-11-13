@@ -27,21 +27,9 @@ public class SetProperty<T> extends BaseProperty<Set<T>> {
      *
      * @param path the path of the property
      * @param type the property type
-     * @param defaultValue the values that make up the entries of the default set
-     */
-    @SafeVarargs
-    public SetProperty(String path, PropertyType<T> type, T... defaultValue) {
-        this(path, type, newSet(defaultValue));
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param path the path of the property
-     * @param type the property type
      * @param defaultValue the default value of the property
      */
-    public SetProperty(String path, PropertyType<T> type, Set<T> defaultValue) {
+    public SetProperty(PropertyType<T> type, Set<T> defaultValue) {
         super(Collections.unmodifiableSet(defaultValue));
         Objects.requireNonNull(type, "type");
         this.type = type;

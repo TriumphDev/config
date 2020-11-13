@@ -1,5 +1,7 @@
 package me.mattstudios.config;
 
+import me.mattstudios.config.beanmapper.PropertyMapper;
+import me.mattstudios.config.beanmapper.PropertyMapperData;
 import me.mattstudios.config.configurationdata.ConfigurationData;
 import me.mattstudios.config.configurationdata.ConfigurationDataBuilder;
 import me.mattstudios.config.migration.MigrationService;
@@ -19,6 +21,8 @@ public final class SettingsManagerBuilder {
     private final PropertyResource resource;
     private ConfigurationData configurationData;
     private MigrationService migrationService = new PlainMigrationService();
+    @Nullable
+    private PropertyMapper propertyMapper;
 
     SettingsManagerBuilder(@NotNull final PropertyResource resource) {
         this.resource = resource;
@@ -49,6 +53,12 @@ public final class SettingsManagerBuilder {
         return this;
     }
 
+    @NotNull
+    public SettingsManagerBuilder propertyMapper(@NotNull final PropertyMapper propertyMapper) {
+        this.propertyMapper = propertyMapper;
+        return this;
+    }
+
     /**
      * Sets the given migration service to the builder.
      *
@@ -71,6 +81,6 @@ public final class SettingsManagerBuilder {
     public SettingsManager create() {
         Objects.requireNonNull(resource, "resource");
         Objects.requireNonNull(configurationData, "configurationData");
-        return new SettingsManagerImpl(resource, configurationData, migrationService);
+        return new SettingsManagerImpl(resource, configurationData, migrationService, new PropertyMapperData(propertyMapper));
     }
 }

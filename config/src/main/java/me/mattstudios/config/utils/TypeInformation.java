@@ -1,7 +1,8 @@
 package me.mattstudios.config.utils;
 
-import javax.annotation.Nullable;
-import java.lang.reflect.Field;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -23,17 +24,8 @@ public class TypeInformation {
      * @param type the type the instance should wrap
      */
     public TypeInformation(Type type) {
+        //System.out.println(type.isInterface());
         this.type = type;
-    }
-
-    /**
-     * Creates a new TypeInformation instance based on the given field's type.
-     *
-     * @param field the field to create a type information for
-     * @return type information wrapping the field's type
-     */
-    public static TypeInformation fromField(Field field) {
-        return new TypeInformation(field.getGenericType());
     }
 
     /**
@@ -130,14 +122,28 @@ public class TypeInformation {
     }
 
     @Nullable
-    private Class<?> getSafeToWriteClassInternal(Type type) {
+    private Class<?> getSafeToWriteClassInternal(@NotNull final Type type) {
         if (type instanceof Class<?>) {
             return (Class<?>) type;
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) type;
-            // Only Class is possible in current implementations, so cast
-            return (Class<?>) pt.getRawType();
         }
+
+        if (type instanceof ParameterizedType) {
+            final ParameterizedType parameterizedType = (ParameterizedType) type;
+            // Only Class is possible in current implementations, so cast
+            return (Class<?>) parameterizedType.getRawType();
+        }
+
+        if (type instanceof WildcardType) {
+            final WildcardType wildcardType = (WildcardType) type;
+            // Gets the upper bounds
+            final Type[] bounds = wildcardType.getUpperBounds();
+            // For now only allow one
+            if (bounds.length > 1) return null;
+            final Type boundType = bounds[0];
+            if (!(boundType instanceof Class)) return null;
+            return (Class<?>) boundType;
+        }
+
         return null;
     }
 

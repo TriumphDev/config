@@ -3,7 +3,7 @@ package me.mattstudios.config.properties;
 import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
 import me.mattstudios.config.resource.PropertyReader;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

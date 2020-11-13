@@ -4,7 +4,7 @@ import me.mattstudios.config.utils.TypeInformation;
 import me.mattstudios.config.beanmapper.MapperImpl;
 import me.mattstudios.config.properties.Property;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A leaf value handler is used in {@link MapperImpl} to convert "simple" values from their

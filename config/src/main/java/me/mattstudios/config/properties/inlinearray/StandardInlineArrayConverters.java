@@ -1,6 +1,6 @@
 package me.mattstudios.config.properties.inlinearray;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;

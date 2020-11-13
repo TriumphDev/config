@@ -2,7 +2,7 @@ package me.mattstudios.config.resource;
 
 import me.mattstudios.config.properties.Property;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 

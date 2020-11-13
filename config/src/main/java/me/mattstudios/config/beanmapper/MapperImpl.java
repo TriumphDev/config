@@ -10,7 +10,7 @@ import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
 import me.mattstudios.config.utils.TypeInformation;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -202,7 +202,7 @@ public class MapperImpl implements Mapper {
         }
 
         // Step 3: last possibility - assume it's a bean and try to map values to its structure
-        return createBean(context, value, parentProperty, parentProperty.getPath());
+        return createBean(context, value, parentProperty);
     }
 
     /**
@@ -341,12 +341,17 @@ public class MapperImpl implements Mapper {
      * @return the converted value, or null if not possible
      */
     @Nullable
-    protected Object createBean(final MappingContext context, final Object value, @NotNull final Property<?> parentProperty, @NotNull final String path) {
-        //System.out.println(value);
-        //System.out.println(context);
+    protected Object createBean(final MappingContext context, final Object value, @NotNull final Property<?> parentProperty) {
         // Ensure that the value is a map so we can map it to a bean
         if (!(value instanceof Map<?, ?>)) {
             return null;
+        }
+
+        final PropertyMapperData mapperData = parentProperty.getPropertyMapper();
+        final Class<?> type = context.getTypeInformation().getSafeToWriteClass();
+
+        if (type != null && mapperData.hasMapper(type)) {
+            return mapperData.mapProperty(type, value);
         }
 
         Collection<BeanPropertyDescription> properties = beanDescriptionFactory.getAllProperties(

@@ -5,7 +5,7 @@ import me.mattstudios.config.properties.types.PropertyType;
 import me.mattstudios.config.resource.PropertyReader;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Property implementation which relies on a {@link PropertyType}.
@@ -30,7 +30,6 @@ public class TypeBasedProperty<T> extends BaseProperty<T> {
     @Nullable
     @Override
     protected T getFromReader(PropertyReader reader, ConvertErrorRecorder errorRecorder) {
-        System.out.println(getPath());
         return type.convert(reader.getObject(getPath()), errorRecorder, this);
     }
 

@@ -10,7 +10,6 @@ public class BeanProperty<T> extends TypeBasedProperty<T> {
 
     public BeanProperty(Class<T> beanType, T defaultValue) {
         this(beanType, defaultValue, DefaultMapper.getInstance());
-        System.out.println(getPath());
     }
 
     public BeanProperty(Class<T> beanType, T defaultValue, Mapper mapper) {
