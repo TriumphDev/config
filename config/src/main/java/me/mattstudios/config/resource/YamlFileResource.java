@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +61,9 @@ public class YamlFileResource implements PropertyResource {
         try (OutputStream os = Files.newOutputStream(path);
              OutputStreamWriter writer = new OutputStreamWriter(os, options.getCharset())) {
             PropertyPathTraverser pathTraverser = new PropertyPathTraverser(configurationData);
+
+            writeDescription(writer, configurationData.getCommentsForSection("TH-CONFIG-DESCRIPTION"));
+
             for (Property<?> property : configurationData.getProperties()) {
                 final Object exportValue = getExportValue(property, configurationData);
 
@@ -105,6 +109,7 @@ public class YamlFileResource implements PropertyResource {
 
         if (value instanceof Map<?, ?> && !((Map<?, ?>) value).isEmpty()) {
             final String pathPrefix = path.isEmpty() ? "" : path + ".";
+            //noinspection unchecked
             for (Map.Entry<String, ?> entry : ((Map<String, ?>) value).entrySet()) {
                 exportValue(writer, pathTraverser, pathPrefix + entry.getKey(), entry.getValue());
             }
@@ -140,14 +145,32 @@ public class YamlFileResource implements PropertyResource {
 
         String lineStart = pathElement.isFirstElement() ? "" : "\n";
         String commentStart = indent(indentation) + "# ";
-        for (String comment : pathElement.getComments()) {
+        for (final String comment : pathElement.getComments()) {
             writer.append(lineStart);
             lineStart = "\n";
+            writeComment(writer, commentStart, comment);
+        }
+    }
 
-            if (!"\n".equals(comment)) {
-                writer.append(commentStart)
-                        .append(comment);
-            }
+    private void writeDescription(@NotNull final Writer writer, @Nullable final List<String> comments) throws IOException {
+        if (comments == null || comments.isEmpty()) return;
+
+        String lineStart = "";
+        String commentStart = "# ";
+        final Iterator<String> iterator = comments.iterator();
+        while (iterator.hasNext()) {
+            final String comment = iterator.next();
+            writer.append(lineStart);
+            lineStart = "\n";
+            writeComment(writer, commentStart, comment);
+            if (!iterator.hasNext()) writer.append("\n");
+        }
+    }
+
+    private void writeComment(final Writer writer, final String commentStart, final String comment) throws IOException {
+        if (!comment.isEmpty() && !"\n".equals(comment)) {
+            writer.append(commentStart)
+                    .append(comment);
         }
     }
 

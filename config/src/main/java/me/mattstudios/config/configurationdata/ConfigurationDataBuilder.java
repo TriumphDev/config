@@ -2,6 +2,7 @@ package me.mattstudios.config.configurationdata;
 
 import me.mattstudios.config.SettingsHolder;
 import me.mattstudios.config.annotations.Comment;
+import me.mattstudios.config.annotations.Description;
 import me.mattstudios.config.annotations.Path;
 import me.mattstudios.config.exception.ConfigMeException;
 import me.mattstudios.config.properties.BaseProperty;
@@ -9,6 +10,7 @@ import me.mattstudios.config.properties.OptionalProperty;
 import me.mattstudios.config.properties.Property;
 
 import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -145,9 +147,14 @@ public class ConfigurationDataBuilder {
         return null;
     }
 
-    protected void collectSectionComments(Class<? extends SettingsHolder> clazz) {
-        SettingsHolder settingsHolder = createSettingsHolderInstance(clazz);
+    protected void collectSectionComments(final Class<? extends SettingsHolder> clazz) {
+        final SettingsHolder settingsHolder = createSettingsHolderInstance(clazz);
         settingsHolder.registerComments(commentsConfiguration);
+
+        if (!clazz.isAnnotationPresent(Description.class)) return;
+        final String[] description = clazz.getDeclaredAnnotation(Description.class).value();
+        if (description.length == 0) return;
+        commentsConfiguration.setComment("TH-CONFIG-DESCRIPTION", description);
     }
 
     /**

@@ -1,10 +1,14 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
 group "me.mattstudios"
 version "1.0-SNAPSHOT"
 
 dependencies {
 
-    implementation "org.yaml:snakeyaml:1.25"
-    implementation "com.google.guava:guava:30.0-jre"
+    implementation "org.yaml:snakeyaml:1.27"
 
     compileOnly "org.jetbrains:annotations:20.0.0"
 
@@ -20,3 +24,60 @@ dependencies {
 
 }
 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+
+            from components.java
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = "Matt\'s Markdown JSON message"
+                description = "Message framework for markdown like syntax to be converted to Minecraft."
+                url = "https://github.com/ipsk/MF-MSG"
+
+                licenses {
+                    license {
+                        name = "MIT License"
+                        url = "http://www.opensource.org/licenses/mit-license.php"
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "matt"
+                        name = "Mateus Moreira"
+                    }
+                }
+
+                scm {
+                    connection = "scm:git:git://github.com/ipsk/MF-MSG.git"
+                    developerConnection = "scm:git:ssh://github.com:ipsk/MF-MSG.git"
+                    url = "http://github.com/ipsk/MF-MSG"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            credentials {
+                username repoUsername
+                password repoPassword
+            }
+
+            url = repoUrl
+        }
+    }
+
+}

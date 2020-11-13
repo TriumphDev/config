@@ -1,8 +1,8 @@
 package me.mattstudios.config
 
 import com.google.gson.Gson
-import jdk.jfr.Description
 import me.mattstudios.config.annotations.Comment
+import me.mattstudios.config.annotations.Description
 import me.mattstudios.config.annotations.Name
 import me.mattstudios.config.annotations.Path
 import me.mattstudios.config.properties.Property
@@ -35,7 +35,7 @@ fun main() {
 }
 
 
-@Description("Description comment will go at the top of file!")
+@Description("Description comment will go at the top of file!", "")
 object Settings : SettingsHolder {
 
     @Path("string")
@@ -45,7 +45,7 @@ object Settings : SettingsHolder {
     @Path("boolean")
     val SECOND = Property.create(true)
 
-    @Comment("Commenting third property")
+    @Comment("Commenting third property", "", "\n")
     @Path("nested.int")
     val THIRD = Property.create(5)
 
