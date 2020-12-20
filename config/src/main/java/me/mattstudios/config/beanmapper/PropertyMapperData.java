@@ -36,11 +36,14 @@ public final class PropertyMapperData {
             final Class<?> target = method.getAnnotation(TargetObject.class).value();
 
             if (!method.getReturnType().equals(target)) continue;
-            if (method.getParameterCount() != 1) continue;
+            if (method.getParameterCount() != 2) continue;
 
-            final Type rawParameterType = method.getGenericParameterTypes()[0];
-            if (!(rawParameterType instanceof ParameterizedType)) continue;
-            final ParameterizedType parameterizedType = (ParameterizedType) rawParameterType;
+            final Type firstParameter = method.getGenericParameterTypes()[0];
+            if (!String.class.isAssignableFrom((Class<?>) firstParameter)) continue;
+
+            final Type secondParameter = method.getGenericParameterTypes()[1];
+            if (!(secondParameter instanceof ParameterizedType)) continue;
+            final ParameterizedType parameterizedType = (ParameterizedType) secondParameter;
             if (!Map.class.isAssignableFrom((Class<?>) parameterizedType.getRawType())) continue;
             final Type[] types = parameterizedType.getActualTypeArguments();
             if (!types[0].equals(String.class)) continue;
@@ -52,21 +55,19 @@ public final class PropertyMapperData {
 
     public boolean hasMapper(@NotNull final Class<?> type) {
         final Method mapper = mappers.get(type);
-        if (mapper == null && type.isInterface()) throw new ConfigMeMapperException("Oh hell nah!");
+        if (mapper == null && type.isInterface()) throw new ConfigMeMapperException("Cannot map interface without custom PropertyMapper!");
         return mapper != null;
     }
 
-    public Object mapProperty(@NotNull final Class<?> type, @NotNull Object value) {
+    public Object mapProperty(@NotNull final Class<?> type, @NotNull Object value, @NotNull final String path) {
         final Method mapper = mappers.get(type);
         if (mapper == null) return null;
 
         try {
-            return mapper.invoke(propertyMapper, value);
+            return mapper.invoke(propertyMapper, path, value);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            throw new ConfigMeMapperException("Could Not map object!", e);
         }
-
-        return null;
     }
 
 }

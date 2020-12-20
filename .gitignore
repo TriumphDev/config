@@ -1,5 +1,5 @@
 
-.idea/
+../triumph-config/.idea/
 
 .gradle/
 build/
@@ -12,3 +12,7 @@ temp.java
 gradle.properties
 
 testing-files/
+
+.idea/
+config-test/out/
+config/out/

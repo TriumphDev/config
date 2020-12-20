@@ -1,6 +1,7 @@
 package me.mattstudios.config.beanmapper.propertydescription;
 
 import me.mattstudios.config.annotations.Comment;
+import me.mattstudios.config.annotations.Ignore;
 import me.mattstudios.config.annotations.Name;
 import me.mattstudios.config.beanmapper.ConfigMeMapperException;
 import me.mattstudios.config.utils.TypeInformation;
@@ -105,7 +106,7 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
      * @param properties the properties that will be used on the class
      */
     protected void validateProperties(Class<?> clazz, Collection<BeanPropertyDescription> properties) {
-        Set<String> names = new HashSet<>(properties.size());
+        final Set<String> names = new HashSet<>(properties.size());
         properties.forEach(property -> {
             if (property.getName().isEmpty()) {
                 throw new ConfigMeMapperException("Custom name of " + property + " may not be empty");
@@ -141,6 +142,7 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
         if (descriptor.getWriteMethod().isAnnotationPresent(Name.class)) {
             return descriptor.getWriteMethod().getAnnotation(Name.class).value();
         }
+        
         return descriptor.getName();
     }
 
@@ -165,6 +167,13 @@ public class BeanDescriptionFactoryImpl implements BeanDescriptionFactory {
         List<PropertyDescriptor> writableProperties = new ArrayList<>(descriptors.length);
         for (PropertyDescriptor descriptor : descriptors) {
             if (descriptor.getWriteMethod() != null && descriptor.getReadMethod() != null) {
+                try {
+                    final Field field = clazz.getDeclaredField(descriptor.getName());
+                    if (field.isAnnotationPresent(Ignore.class)) continue;
+                } catch (final NoSuchFieldException e) {
+                    e.printStackTrace();
+                }
+
                 writableProperties.add(descriptor);
             }
         }

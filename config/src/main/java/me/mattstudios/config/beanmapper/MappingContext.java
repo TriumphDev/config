@@ -52,4 +52,6 @@ public interface MappingContext {
      */
     void registerError(String reason);
 
+    String getPath();
+
 }

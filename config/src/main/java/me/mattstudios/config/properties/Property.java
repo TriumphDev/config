@@ -4,6 +4,7 @@ import me.mattstudios.config.beanmapper.PropertyMapperData;
 import me.mattstudios.config.configurationdata.ConfigurationDataImpl;
 import me.mattstudios.config.migration.MigrationService;
 import me.mattstudios.config.properties.convertresult.PropertyValue;
+import me.mattstudios.config.properties.types.BeanPropertyType;
 import me.mattstudios.config.properties.types.EnumPropertyType;
 import me.mattstudios.config.properties.types.PrimitivePropertyType;
 import me.mattstudios.config.resource.PropertyReader;
@@ -163,6 +164,12 @@ public interface Property<T> {
     static <E extends Enum<E>> Property<E> create(@NotNull final E defaultValue) {
         //noinspection unchecked
         return new EnumProperty<>((Class<E>) defaultValue.getClass(), defaultValue);
+    }
+
+    @NotNull
+    @Contract("_, _, -> new")
+    static <T> Property<Map<String, T>> create(@NotNull final Class<T> type, @NotNull final Map<String, T> defaultValue) {
+        return new MapProperty<>(BeanPropertyType.of(type), defaultValue);
     }
 
     /**

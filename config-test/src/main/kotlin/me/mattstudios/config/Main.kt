@@ -17,12 +17,10 @@ val gson = Gson()
 fun main() {
 
     val config = SettingsManager
-            .from(File("testing-files", "config.yml"))
-            .configurationData(Settings::class.java)
-            .propertyMapper(CustomMapper())
-            .create()
-
-    println(config.getProperty(Settings.EIGHTH))
+        .from(File("testing-files", "config.yml"))
+        .configurationData(Settings::class.java)
+        .propertyMapper(CustomMapper())
+        .create()
 
     //println(gson.toJson(Test()))
 
@@ -38,55 +36,29 @@ fun main() {
 @Description("Description comment will go at the top of file!", "")
 object Settings : SettingsHolder {
 
-    @Path("string")
-    @Comment("Comment for first property")
-    val FIRST = Property.create("first property")
-
-    @Path("boolean")
-    val SECOND = Property.create(true)
-
-    @Comment("Commenting third property", "", "\n")
-    @Path("nested.int")
-    val THIRD = Property.create(5)
-
-    @Path("nested.second.double")
-    val FORTH = Property.create(5.5)
-
-    /*@Path("nested.list")
-    val SIXTH = Property.create(listOf(1, 2))*/
-
-    @Path("list2")
-    val SIXTH2 = Property.create(setOf("Hello", "Mate"))
-
-    /*@Comment("Added an empty line above")
-    @Path("nested.enum")
-    val SEVENTH = Property.create(TestEnum.VALUE1)*/
-
-    @Path("bean")
-    val EIGHTH = Property.create(Test())
+    @Path("test")
+    val FIRST = Property.create(Test())
 
 }
 
 data class Test(
-        @Comment("This is a comment to parent class")
-        var name: String = "Matt",
-        var map: Map<String, Some> = mapOf("first" to Child("Hey", listOf(1, 3)), "second" to Child("Hey2")),
-        @Name("not-child")
-        var child: Some = Child()
+    @Comment("This is a comment to parent class") var name: String = "Matt",
+    var map: Map<String, Some> = mapOf("first" to Child("Hey", listOf(1, 3)), "second" to Child("Hey2")),
+    @Name("not-child") var child: Some = Child()
 )
 
 data class Child(
-        @Comment("This is a comment to child class")
-        var name: String = "Not matt",
-        var list: List<Int> = listOf(1, 2),
-        var enu: TestEnum = TestEnum.VALUE2
+    @Comment("This is a comment to child class")
+    var name: String = "Not matt",
+    var list: List<Int> = listOf(1, 2),
+    var enum: TestEnum = TestEnum.VALUE2
 ) : Some
 
 data class Matt(
-        @Comment("This is a comment to child class")
-        var name: String = "Matt",
-        var list: List<Int> = listOf(1, 2),
-        var enu: TestEnum = TestEnum.VALUE2
+    @Comment("This is a comment to child class")
+    var name: String = "Matt",
+    var list: List<Int> = listOf(1, 2),
+    var enu: TestEnum = TestEnum.VALUE2
 ) : Some
 
 interface Some

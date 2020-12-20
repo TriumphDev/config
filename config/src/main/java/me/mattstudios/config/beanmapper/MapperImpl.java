@@ -11,6 +11,7 @@ import me.mattstudios.config.utils.TypeInformation;
 import org.jetbrains.annotations.NotNull;
 
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -294,7 +295,7 @@ public class MapperImpl implements Mapper {
             Map<String, Object> result = createMapMatchingType(context);
             for (Map.Entry<String, ?> entry : entries.entrySet()) {
                 Object mappedValue = convertValueForType(
-                        context.createChild("[k=" + entry.getKey() + "]", mapValueType), entry.getValue(), parentProperty);
+                        context.createChild(entry.getKey(), mapValueType), entry.getValue(), parentProperty);
                 if (mappedValue == null) {
                     context.registerError("Cannot map value for key " + entry.getKey());
                 } else {
@@ -351,20 +352,20 @@ public class MapperImpl implements Mapper {
         final Class<?> type = context.getTypeInformation().getSafeToWriteClass();
 
         if (type != null && mapperData.hasMapper(type)) {
-            return mapperData.mapProperty(type, value);
+            return mapperData.mapProperty(type, value, context.getPath());
         }
 
-        Collection<BeanPropertyDescription> properties = beanDescriptionFactory.getAllProperties(
+        final Collection<BeanPropertyDescription> properties = beanDescriptionFactory.getAllProperties(
                 context.getTypeInformation().getSafeToWriteClass());
         // Check that we have properties (or else we don't have a bean)
         if (properties.isEmpty()) {
             return null;
         }
 
-        Map<?, ?> entries = (Map<?, ?>) value;
-        Object bean = createBeanMatchingType(context);
+        final Map<?, ?> entries = (Map<?, ?>) value;
+        final Object bean = createBeanMatchingType(context);
         for (BeanPropertyDescription property : properties) {
-            Object result = convertValueForType(
+            final Object result = convertValueForType(
                     context.createChild(property.getName(), property.getTypeInformation()),
                     entries.get(property.getName()), parentProperty);
             if (result == null) {

@@ -22,7 +22,7 @@ public class MappingContextImpl implements MappingContext {
      * Creates an initial context (used at the start of a mapping process).
      *
      * @param typeInformation the required type
-     * @param errorRecorder error recorder to register errors even if a valid value is returned
+     * @param errorRecorder   error recorder to register errors even if a valid value is returned
      * @return root mapping context
      */
     public static MappingContextImpl createRoot(TypeInformation typeInformation, ConvertErrorRecorder errorRecorder) {
@@ -56,4 +56,10 @@ public class MappingContextImpl implements MappingContext {
     public String toString() {
         return getClass().getSimpleName() + "[" + createDescription() + "]";
     }
+
+    @Override
+    public String getPath() {
+        return path;
+    }
+
 }
