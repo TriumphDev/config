@@ -22,6 +22,7 @@ fun main() {
         .propertyMapper(CustomMapper())
         .create()
 
+
     //println(gson.toJson(Test()))
 
     /*val settingsManager = ConfigManager()SettingsManagerBuilder.withYamlFile(File("testing-files", "config.yml"))

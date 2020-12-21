@@ -34,7 +34,7 @@ public interface SettingsManager {
      * @param <T>      The property's type
      * @return The property's value
      */
-    @NotNull <T> T getProperty(@NotNull final Property<T> property);
+    @NotNull <T> T get(@NotNull final Property<T> property);
 
     /**
      * Sets a new value for the given property.
@@ -43,7 +43,7 @@ public interface SettingsManager {
      * @param value    The new value to assign to the property
      * @param <T>      The property's type
      */
-    <T> void setProperty(@NotNull final Property<T> property, @NotNull final T value);
+    <T> void set(@NotNull final Property<T> property, @NotNull final T value);
 
     /**
      * Reloads the configuration.

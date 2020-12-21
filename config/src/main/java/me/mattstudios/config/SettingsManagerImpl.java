@@ -79,7 +79,7 @@ public class SettingsManagerImpl implements SettingsManager {
      */
     @NotNull
     @Override
-    public <T> T getProperty(@NotNull final Property<T> property) {
+    public <T> T get(@NotNull final Property<T> property) {
         return configurationData.getValue(property);
     }
 
@@ -91,7 +91,7 @@ public class SettingsManagerImpl implements SettingsManager {
      * @param <T>      the property's type
      */
     @Override
-    public <T> void setProperty(@NotNull final Property<T> property, @NotNull final T value) {
+    public <T> void set(@NotNull final Property<T> property, @NotNull final T value) {
         configurationData.setValue(property, value);
     }
 
