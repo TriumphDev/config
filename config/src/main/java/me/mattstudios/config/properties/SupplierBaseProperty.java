@@ -5,27 +5,28 @@ import me.mattstudios.config.properties.convertresult.ConvertErrorRecorder;
 import me.mattstudios.config.properties.convertresult.PropertyValue;
 import me.mattstudios.config.resource.PropertyReader;
 import org.jetbrains.annotations.NotNull;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
- * Base implementation of {@link Property}. All properties should extend from this class.
+ * Base implementation of {@link Property} with a supplier as default value.
  * <p>
  * This base implementation makes interacting with properties null safe by guaranteeing that the default value
  * and its {@link #determineValue determined value} can never be null.
  *
  * @param <T> the property type
  */
-public abstract class BaseProperty<T> implements Property<T> {
+public abstract class SupplierBaseProperty<T> implements Property<T> {
 
     @NotNull
     private String path = "";
     @NotNull
-    private final T defaultValue;
+    private final Supplier<T> defaultValue;
     @NotNull
     private final Map<String, List<String>> comments = new LinkedHashMap<>();
     @NotNull
@@ -36,7 +37,7 @@ public abstract class BaseProperty<T> implements Property<T> {
      *
      * @param defaultValue the default value of the property
      */
-    public BaseProperty(@NotNull final T defaultValue) {
+    public SupplierBaseProperty(@NotNull final Supplier<T> defaultValue) {
         this.defaultValue = defaultValue;
     }
 
@@ -50,10 +51,10 @@ public abstract class BaseProperty<T> implements Property<T> {
         return path;
     }
 
-    @Override
     @NotNull
+    @Override
     public T getDefaultValue() {
-        return defaultValue;
+        return defaultValue.get();
     }
 
     @Override

@@ -6,16 +6,17 @@ import me.mattstudios.config.migration.MigrationService;
 import me.mattstudios.config.properties.convertresult.PropertyValue;
 import me.mattstudios.config.properties.types.BeanPropertyType;
 import me.mattstudios.config.properties.types.EnumPropertyType;
-import me.mattstudios.config.properties.types.PrimitivePropertyType;
+import me.mattstudios.config.properties.types.PropertyType;
 import me.mattstudios.config.resource.PropertyReader;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Property interface. A property knows its path, its type, and can convert the values from
@@ -125,7 +126,7 @@ public interface Property<T> {
     @NotNull
     @Contract("_ -> new")
     static Property<Integer> create(final int defaultValue) {
-        return new TypeBasedProperty<>(defaultValue, PrimitivePropertyType.INTEGER);
+        return new TypeBasedProperty<>(defaultValue, PropertyType.INTEGER);
     }
 
     /**
@@ -137,7 +138,7 @@ public interface Property<T> {
     @NotNull
     @Contract("_ -> new")
     static Property<Double> create(final double defaultValue) {
-        return new TypeBasedProperty<>(defaultValue, PrimitivePropertyType.DOUBLE);
+        return new TypeBasedProperty<>(defaultValue, PropertyType.DOUBLE);
     }
 
     /**
@@ -149,15 +150,29 @@ public interface Property<T> {
     @NotNull
     @Contract("_ -> new")
     static Property<String> create(@NotNull final String defaultValue) {
-        return new TypeBasedProperty<>(defaultValue, PrimitivePropertyType.STRING);
+        return new TypeBasedProperty<>(defaultValue, PropertyType.STRING);
+    }
+
+    /**
+     * Creates a new property with a supplier as the default value for non constant defaults.
+     *
+     * @param type         A {@link PropertyType} of the supplier
+     * @param defaultValue The default value
+     * @param <T>          Any
+     * @return A new Property with the supplier default value
+     */
+    @NotNull
+    @Contract("_, _ -> new")
+    static <T> Property<T> create(@NotNull PropertyType<T> type, @NotNull final Supplier<T> defaultValue) {
+        return new TypeBasedSupplierProperty<>(defaultValue, type);
     }
 
     /**
      * Creates a new enum property.
      *
-     * @param defaultValue the default value
-     * @param <E>          the enum type
-     * @return the created enum property
+     * @param defaultValue The default value
+     * @param <E>          The enum type
+     * @return The created enum property
      */
     @NotNull
     @Contract("_, -> new")
@@ -166,6 +181,14 @@ public interface Property<T> {
         return new EnumProperty<>((Class<E>) defaultValue.getClass(), defaultValue);
     }
 
+    /**
+     * Creates a map property
+     *
+     * @param type         A class to reference a {@link BeanPropertyType}
+     * @param defaultValue The default value
+     * @param <T>          Any
+     * @return The new map property
+     */
     @NotNull
     @Contract("_, _, -> new")
     static <T> Property<Map<String, T>> create(@NotNull final Class<T> type, @NotNull final Map<String, T> defaultValue) {
@@ -181,7 +204,7 @@ public interface Property<T> {
     @NotNull
     @Contract("_ -> new")
     static Property<List<String>> create(@NotNull final List<String> defaultValue) {
-        return new ListProperty<>(PrimitivePropertyType.STRING, defaultValue);
+        return new ListProperty<>(PropertyType.STRING, defaultValue);
     }
 
     /**
@@ -193,7 +216,7 @@ public interface Property<T> {
     @NotNull
     @Contract("_ -> new")
     static Property<Set<String>> create(@NotNull final Set<String> defaultValue) {
-        return new SetProperty<>(PrimitivePropertyType.STRING, defaultValue);
+        return new SetProperty<>(PropertyType.STRING, defaultValue);
     }
 
     /**
@@ -214,15 +237,15 @@ public interface Property<T> {
     // Optional flavors
     // --------------
     static Property<Optional<Boolean>> createOptional(@Nullable final Boolean defaultValue) {
-        return new OptionalProperty<>(new TypeBasedProperty<>(false, PrimitivePropertyType.BOOLEAN), defaultValue);
+        return new OptionalProperty<>(new TypeBasedProperty<>(false, PropertyType.BOOLEAN), defaultValue);
     }
 
     static Property<Optional<Integer>> createOptional(@Nullable final Integer defaultValue) {
-        return new OptionalProperty<>(new TypeBasedProperty<>(0, PrimitivePropertyType.INTEGER), defaultValue);
+        return new OptionalProperty<>(new TypeBasedProperty<>(0, PropertyType.INTEGER), defaultValue);
     }
 
     static Property<Optional<String>> createOptional(@Nullable final String defaultValue) {
-        return new OptionalProperty<>(new TypeBasedProperty<>("", PrimitivePropertyType.STRING), defaultValue);
+        return new OptionalProperty<>(new TypeBasedProperty<>("", PropertyType.STRING), defaultValue);
     }
 
     static <E extends Enum<E>> Property<Optional<E>> createOptional(@NotNull final E defaultValue) {

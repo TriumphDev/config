@@ -4,7 +4,6 @@ import me.mattstudios.config.annotations.Comment;
 import me.mattstudios.config.configurationdata.CommentsConfiguration;
 import me.mattstudios.config.configurationdata.ConfigurationDataBuilder;
 import me.mattstudios.config.properties.Property;
-import me.mattstudios.config.properties.PropertyInitializer;
 
 /**
  * Marker interface for classes that define Property objects.
@@ -15,7 +14,7 @@ import me.mattstudios.config.properties.PropertyInitializer;
  * <p>
  * Classes implementing this interface must have a no-args constructor (any visibility).
  *
- * @see PropertyInitializer
+ * @see Property
  * @see ConfigurationDataBuilder
  */
 public interface SettingsHolder {

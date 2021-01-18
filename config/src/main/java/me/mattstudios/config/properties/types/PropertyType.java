@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 
 import org.jetbrains.annotations.Nullable;
 
+import static me.mattstudios.config.properties.types.PrimitivePropertyType.fromNumber;
+
 /**
  * Property type: provides methods for converting between property resource and a defined type
  * and allows to be used in generic structures such as an array property or map property.
@@ -13,6 +15,31 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> type of the values the property type handles
  */
 public interface PropertyType<T> {
+
+    PropertyType<Long> LONG = fromNumber(Number::longValue);
+
+    PropertyType<Integer> INTEGER = fromNumber(Number::intValue);
+
+    PropertyType<Double> DOUBLE = fromNumber(Number::doubleValue);
+
+    PropertyType<Float> FLOAT = fromNumber(Number::floatValue);
+
+    PropertyType<Short> SHORT = fromNumber(Number::shortValue);
+
+    PropertyType<Byte> BYTE = fromNumber(Number::byteValue);
+
+    PropertyType<Boolean> BOOLEAN = new PrimitivePropertyType<>(
+            object -> object instanceof Boolean ? (Boolean) object : null
+    );
+
+    PropertyType<String> STRING = new PrimitivePropertyType<>(
+            object -> object == null ? null : object.toString()
+    );
+
+    PropertyType<String> LOWERCASE_STRING = new PrimitivePropertyType<>(
+            object -> object == null ? null : object.toString().toLowerCase()
+    );
+
 
     /**
      * Converts the given object (typically read from a property resource) to the given type, if possible.

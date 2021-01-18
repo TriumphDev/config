@@ -25,7 +25,6 @@ public class SetProperty<T> extends BaseProperty<Set<T>> {
     /**
      * Constructor.
      *
-     * @param path the path of the property
      * @param type the property type
      * @param defaultValue the default value of the property
      */
